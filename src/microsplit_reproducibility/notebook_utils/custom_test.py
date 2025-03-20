@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
+from numpy.typing import NDArray
 from careamics.lvae_training.eval_utils import get_predictions, get_device
 from careamics.lightning import VAEModule
 from microsplit_reproducibility.datasets import create_train_val_datasets, SplittingDataset
@@ -21,13 +22,20 @@ def load_pretrained_model(model: VAEModule, ckpt_path):
     print(f"Loaded model from {ckpt_path}")
 
 
-def get_unnormalized_predictions(model: VAEModule, dset: SplittingDataset, 
-                                 mmse_count, num_workers=4, grid_size=32,
-                                 batch_size=8):
+def get_unnormalized_predictions(
+    model: VAEModule, 
+    dset: SplittingDataset, 
+    mmse_count, 
+    num_workers=4, 
+    grid_size=32,
+    batch_size=8
+) -> tuple[dict[str, NDArray[np.float_]], dict[str, NDArray[np.float_]], dict[str, NDArray[np.float_]]]:
     """
     Get the stitched predictions which have been unnormlized.
     """
     # You might need to adjust the batch size depending on the available memory
+    stitched_predictions: dict[str, NDArray[np.float_]]
+    stitched_stds: dict[str, NDArray[np.float_]]
     stitched_predictions, stitched_stds = get_predictions(
         model=model,
         dset=dset,
@@ -39,8 +47,13 @@ def get_unnormalized_predictions(model: VAEModule, dset: SplittingDataset,
     )
     
     mean_params, std_params = dset.get_mean_std()
-    unnorm_stitched_predictions = stitched_predictions["data"]*std_params['target'].squeeze().reshape(1,1,1,-1) + mean_params['target'].squeeze().reshape(1,1,1,-1)
-    return unnorm_stitched_predictions, stitched_predictions, stitched_stds
+    # stitched_predictions is a dict where the key is the source filename
+    # unnorm each prediction individually preserving the file name
+    unnorm_stitch_predictions = {}
+    for fname, file_prediction in stitched_predictions.items():
+        unnorm_stitch_predictions[fname] = file_prediction*std_params['target'].squeeze().reshape(1,1,1,-1) + mean_params['target'].squeeze().reshape(1,1,1,-1)
+
+    return unnorm_stitch_predictions, stitched_predictions, stitched_stds
 
 def get_target(dset):
     return dset._data.copy()
