@@ -38,9 +38,20 @@ def get_unnormalized_predictions(model: VAEModule, dset: SplittingDataset,
         grid_size=grid_size,
     )
     
+    # NOTE: this "data" key is actually the path the data is saved in ...
+    # this should only be a very temporary solution
+    # only to not have to change it in the notebooks
+    # proper solution is:
+
+    # unnorm_stitched_predictionsunnorm_stitched_predictions = {}
+    # for fname, pred in stitched_predictions.items():
+    #     unnorm_stitched_predictions[fname] = pred*std_params['target'].squeeze().reshape(1,1,1,-1) + mean_params['target'].squeeze().reshape(1,1,1,-1)
+
+
+
     mean_params, std_params = dset.get_mean_std()
     unnorm_stitched_predictions = stitched_predictions["data"]*std_params['target'].squeeze().reshape(1,1,1,-1) + mean_params['target'].squeeze().reshape(1,1,1,-1)
-    return unnorm_stitched_predictions, stitched_predictions, stitched_stds
+    return unnorm_stitched_predictions, stitched_predictions["data"], stitched_stds["data"]
 
 def get_target(dset):
     return dset._data.copy()
