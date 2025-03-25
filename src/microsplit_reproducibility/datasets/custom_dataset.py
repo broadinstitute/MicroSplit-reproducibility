@@ -39,7 +39,6 @@ def load_data(datadir):
         channels_data.append(channel_stack)
     
     final_data = np.stack(channels_data, axis=-1)
-    print(final_data.shape)
     return final_data
 
 
