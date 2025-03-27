@@ -13,6 +13,7 @@ def _get_nm_paths(
 
 
 def get_microsplit_parameters(
+    algorithm: str,
     img_size: tuple[int, ...],
     noise_model_path: str,
     target_channels: int = 2,
@@ -28,12 +29,12 @@ def get_microsplit_parameters(
 ) -> dict:
     nm_paths = _get_nm_paths(noise_model_path, channel_idx_list=list(range(target_channels)))
     return SplittingParameters(
-        algorithm="musplit",
+        algorithm=algorithm,
         img_size=img_size,
         target_channels=target_channels,
         multiscale_count=multiscale_count,
-        predict_logvar="pixelwise",
-        loss_type="musplit",
+        predict_logvar="pixelwise" if algorithm=="musplit" else None,
+        loss_type=algorithm,
         kl_type="kl_restricted",
         batch_size=batch_size,
         lr=lr,
