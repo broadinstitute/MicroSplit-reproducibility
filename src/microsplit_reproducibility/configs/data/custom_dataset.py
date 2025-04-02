@@ -37,8 +37,8 @@ def get_data_configs(
         input_is_sum=False,
         padding_kwargs={"mode": "reflect"},
         overlapping_padding_kwargs={"mode": "reflect"},
-        start_alpha=[0.1] * num_channels,
-        end_alpha=[0.9] * num_channels,
+        # start_alpha=[0.1] * num_channels,
+        # end_alpha=[0.9] * num_channels,
     )
     val_data_config = train_data_config.model_copy(
         update=dict(
