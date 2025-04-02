@@ -58,13 +58,13 @@ def get_train_val_data(
     test_idx = train_idx
     # TODO temporary hack
     if datasplit_type == DataSplitType.All:
-        data = data.astype(np.float32)
+        data = data.astype(np.float64)
     elif datasplit_type == DataSplitType.Train:
-        data = data[train_idx].astype(np.float32)
+        data = data[train_idx].astype(np.float64)
     elif datasplit_type == DataSplitType.Val:
-        data = data[val_idx].astype(np.float32)
+        data = data[val_idx].astype(np.float64)
     elif datasplit_type == DataSplitType.Test:
-        data = data[test_idx].astype(np.float32)
+        data = data[test_idx].astype(np.float64)
     else:
         raise Exception("invalid datasplit")
 
