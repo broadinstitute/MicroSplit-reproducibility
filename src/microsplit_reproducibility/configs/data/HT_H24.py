@@ -1,18 +1,19 @@
 from careamics.lvae_training.dataset import DatasetConfig, DataSplitType, DataType
 
 
-class Elisa3DConfig(DatasetConfig):
+class HT_H24Config(DatasetConfig):
     channel_idx_list: list[int]
     z_start: int
     z_stop: int
 
 
-def get_data_configs() -> tuple[Elisa3DConfig, Elisa3DConfig]:
-    train_data_config = Elisa3DConfig(
+def get_data_configs() -> tuple[HT_H24Config, HT_H24Config]:
+    train_data_config = HT_H24Config(
         datasplit_type=DataSplitType.Train,
-        image_size=64,
+        image_size=(64, 64),
+        grid_size=32,
         multiscale_lowres_count=1,
-        data_type=DataType.Elisa3DData,
+        data_type=DataType.HTH24Data,
         depth3D=9,
         mode_3D=True,
         poisson_noise_factor=-1,
@@ -37,5 +38,13 @@ def get_data_configs() -> tuple[Elisa3DConfig, Elisa3DConfig]:
             enable_random_cropping=False,  # No random cropping on validation.
         )
     )
+    
+    test_data_config = train_data_config.model_copy(
+        update=dict(
+            datasplit_type=DataSplitType.Test,
+            allow_generation=False,  # No generation during validation
+            enable_random_cropping=False,  # No random cropping on validation.
+        )
+    )
 
-    return train_data_config, val_data_config
+    return train_data_config, val_data_config, test_data_config

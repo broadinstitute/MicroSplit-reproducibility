@@ -22,7 +22,7 @@ def load_filtered_zstacks(fpath, zstart=20, zstop=44):
 
 
 def datafiles():
-    return ["20240725/WTC11_WT_DIV25_3_1_0001.nd2"]
+    return ["WTC11_WT_DIV25_3_1_0001.nd2"]
 
 
 def get_train_val_data(
