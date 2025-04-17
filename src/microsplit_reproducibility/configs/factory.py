@@ -10,7 +10,7 @@ from careamics.config.optimizer_models import OptimizerModel, LrSchedulerModel
 
 
 def get_model_config(**kwargs) -> LVAEModel:
-    """Get the model configuration for the muSplit model.
+    """Get the model configuration for the MicroSplit model.
     
     Parameters
     ----------
@@ -24,6 +24,8 @@ def get_model_config(**kwargs) -> LVAEModel:
     return LVAEModel(
         architecture="LVAE",
         input_shape=kwargs["img_size"],
+        encoder_conv_strides=[1, 2, 2],
+        decoder_conv_strides=[1, 2, 2],
         multiscale_count=kwargs["multiscale_count"],
         z_dims=[128, 128, 128, 128],
         output_channels=kwargs["target_channels"],
