@@ -44,13 +44,14 @@ def get_all_channel_list(target_channel_list):
 def get_unnormalized_predictions(
     model: VAEModule,
     dset: SplittingDataset,
+    data_key,
     mmse_count,
     num_workers=4,
     grid_size=32,
     batch_size=8,
 ):
     """
-    Get the stitched predictions which have been unnormlized.
+    Get the stitched predictions which have been unnormalized.
     """
     # You might need to adjust the batch size depending on the available memory
     stitched_predictions, stitched_stds = get_predictions(
@@ -62,8 +63,9 @@ def get_unnormalized_predictions(
         tile_size=model.model.image_size,
         grid_size=grid_size,
     )
-    stitched_predictions = stitched_predictions
-    stitched_stds = stitched_stds
+    
+    stitched_predictions = stitched_predictions[data_key]
+    stitched_stds = stitched_stds[data_key]
 
     stitched_predictions = stitched_predictions[..., :2]
     stitched_stds = stitched_stds[..., :2]
@@ -78,11 +80,11 @@ def get_unnormalized_predictions(
 
 
 def get_target(dset):
-    return dset._data[..., :-1].copy()
+    return dset._data.copy()
 
 
 def get_input(dset):
-    return dset._data[..., -1].copy()
+    return dset._data.copy()
 
 
 def pick_random_inputs_with_content(dset):
@@ -100,10 +102,11 @@ def pick_random_inputs_with_content(dset):
 
 
 def pick_random_patches_with_content(tar, patch_size):
-    H, W = tar.shape[1:3]
+    Z, H, W = tar.shape[1:4]
     std_patches = []
     indices = []
     for i in range(1000):
+        z_idx = np.random.randint(Z - 1)
         h_start = np.random.randint(H - patch_size)
         w_start = np.random.randint(W - patch_size)
         std_tmp = []
@@ -111,6 +114,7 @@ def pick_random_patches_with_content(tar, patch_size):
             std_tmp.append(
                 tar[
                     0,
+                    z_idx,
                     h_start : h_start + patch_size,
                     w_start : w_start + patch_size,
                     ch_idx,
@@ -118,7 +122,7 @@ def pick_random_patches_with_content(tar, patch_size):
             )
 
         std_patches.append(np.mean(std_tmp))
-        indices.append((h_start, w_start))
+        indices.append((z_idx, h_start, w_start))
 
     # sort by std
     indices = np.array(indices)[np.argsort(std_patches)][-40:]
@@ -134,29 +138,30 @@ def pick_random_patches_with_content(tar, patch_size):
     return final_indices
 
 
-def full_frame_evaluation(stitched_predictions, tar, inp):
+def full_frame_evaluation(stitched_predictions, tar, sample_idx=None):
 
-    ncols = tar.shape[-1] + 1
+    ncols = tar.shape[-1]
     nrows = 2
     fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 5, nrows * 5))
-    ax[0, 0].imshow(inp)
-    for i in range(ncols - 1):
-        vmin = stitched_predictions[..., i].min()
-        vmax = stitched_predictions[..., i].max()
-        ax[0, i + 1].imshow(tar[..., i], vmin=vmin, vmax=vmax)
-        ax[1, i + 1].imshow(stitched_predictions[..., i], vmin=vmin, vmax=vmax)
+
+    if sample_idx is None:
+        sample_idx = np.random.randint(0, tar.shape[0])
+
+    for i in range(ncols):
+        vmin = stitched_predictions[sample_idx, ..., i].min()
+        vmax = stitched_predictions[sample_idx, ..., i].max()
+        ax[0, i].imshow(tar[sample_idx, ..., i], vmin=vmin, vmax=vmax)
+        ax[1, i].imshow(stitched_predictions[sample_idx, ..., i], vmin=vmin, vmax=vmax)
 
     # disable the axis for ax[1,0]
     ax[1, 0].axis("off")
-    ax[0, 0].set_title("Input", fontsize=15)
-    ax[0, 1].set_title("Channel 1", fontsize=15)
-    ax[0, 2].set_title("Channel 2", fontsize=15)
+    ax[0, 0].set_title("Channel 1", fontsize=15)
+    ax[0, 1].set_title("Channel 2", fontsize=15)
     # set y labels on the right for ax[0,2]
-    ax[0, 2].yaxis.set_label_position("right")
-    ax[0, 2].set_ylabel("Target", fontsize=15)
-
-    ax[1, 2].yaxis.set_label_position("right")
-    ax[1, 2].set_ylabel("Predicted", fontsize=15)
+    ax[0, 1].yaxis.set_label_position("right")
+    ax[0, 1].set_ylabel("Target", fontsize=15)
+    ax[1, 1].yaxis.set_label_position("right")
+    ax[1, 1].set_ylabel("Predicted", fontsize=15)
 
 
 def find_recent_metrics():
@@ -208,7 +213,7 @@ def plot_metrics(df):
         a.set_xlabel("Epoch")
 
 
-def show_sampling(dset, model, ax=None):
+def show_sampling(dset, model, ax=None, z_idx=4):
     idx_list = pick_random_inputs_with_content(dset)
     # inp, S1, S2, diff, mmse, tar
     ncols = 6
@@ -216,7 +221,7 @@ def show_sampling(dset, model, ax=None):
     if ax is None:
         _, ax = plt.subplots(figsize=(imgsz * ncols, imgsz * 2), ncols=ncols, nrows=2)
     inp_patch, tar_patch = dset[idx_list[0]]
-    ax[0, 0].imshow(inp_patch[0])
+    ax[0, 0].imshow(inp_patch[0][z_idx])
     ax[0, 0].set_title("Input (Idx: {})".format(idx_list[0]))
 
     samples = []
@@ -226,7 +231,7 @@ def show_sampling(dset, model, ax=None):
     for _ in range(n_samples):
         with torch.no_grad():
             pred_patch, _ = model(torch.Tensor(inp_patch).unsqueeze(0).to(model.device))
-            samples.append(pred_patch[0, : tar_patch.shape[0]].cpu().numpy())
+            samples.append(pred_patch[0, :tar_patch.shape[0], z_idx].cpu().numpy())
     samples = np.array(samples)
 
     ax[0, 1].imshow(samples[0, 0])
@@ -237,14 +242,14 @@ def show_sampling(dset, model, ax=None):
     ax[0, 3].set_title("S1 - S2")
     ax[0, 4].imshow(np.mean(samples[:, 0], axis=0))
     ax[0, 4].set_title("MMSE")
-    ax[0, 5].imshow(tar_patch[0])
+    ax[0, 5].imshow(tar_patch[0][z_idx])
     ax[0, 5].set_title("Target")
     # second channel
     ax[1, 1].imshow(samples[0, 1])
     ax[1, 2].imshow(samples[1, 1])
     ax[1, 3].imshow(samples[0, 1] - samples[1, 1], cmap="coolwarm")
     ax[1, 4].imshow(np.mean(samples[:, 1], axis=0))
-    ax[1, 5].imshow(tar_patch[1])
+    ax[1, 5].imshow(tar_patch[1][z_idx])
 
     ax[1, 0].axis("off")
 
