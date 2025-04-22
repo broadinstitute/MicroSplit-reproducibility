@@ -73,8 +73,8 @@ def get_unnormalized_predictions(
     mean_params, std_params = dset.get_mean_std()
     unnorm_stitched_predictions = stitched_predictions * std_params[
         "target"
-    ].squeeze().reshape(1, 1, 1, -1) + mean_params["target"].squeeze().reshape(
-        1, 1, 1, -1
+    ].squeeze().reshape(1, 1, 1, 1, -1) + mean_params["target"].squeeze().reshape(
+        1, 1, 1, 1, -1
     )
     return unnorm_stitched_predictions, stitched_predictions, stitched_stds
 
