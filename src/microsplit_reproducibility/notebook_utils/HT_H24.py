@@ -138,20 +138,22 @@ def pick_random_patches_with_content(tar, patch_size):
     return final_indices
 
 
-def full_frame_evaluation(stitched_predictions, tar, sample_idx=None):
+def full_frame_evaluation(stitched_predictions, tar, z_idx=None):
 
     ncols = tar.shape[-1]
     nrows = 2
     fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 5, nrows * 5))
 
-    if sample_idx is None:
-        sample_idx = np.random.randint(0, tar.shape[0])
-
+    if z_idx is None:
+        z_idx = np.random.randint(0, tar.shape[0])
+    
+    print(f"Using Z index: {z_idx}")
+        
     for i in range(ncols):
-        vmin = stitched_predictions[sample_idx, ..., i].min()
-        vmax = stitched_predictions[sample_idx, ..., i].max()
-        ax[0, i].imshow(tar[sample_idx, ..., i], vmin=vmin, vmax=vmax)
-        ax[1, i].imshow(stitched_predictions[sample_idx, ..., i], vmin=vmin, vmax=vmax)
+        vmin = stitched_predictions[z_idx, ..., i].min()
+        vmax = stitched_predictions[z_idx, ..., i].max()
+        ax[0, i].imshow(tar[z_idx, ..., i])
+        ax[1, i].imshow(stitched_predictions[z_idx, ..., i], vmin=vmin, vmax=vmax)
 
     # disable the axis for ax[1,0]
     ax[1, 0].axis("off")

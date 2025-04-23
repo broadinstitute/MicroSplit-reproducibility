@@ -208,7 +208,7 @@ def plot_input_patches_3d(dataset, num_channels: int, num_samples: int = 3, samp
         # Plot each dimension
         for channel_idx in range(num_channels):
             ax[i, input_count+channel_idx].imshow(sample[channel_idx][random_slice])
-            ax[i, input_count+channel_idx].set_title(f"Channel {channel_idx}")
+            ax[i, input_count+channel_idx].set_title(f"Channel {channel_idx + 1}")
     
     if old_patch_size is not None:
         dataset.set_img_sz((old_patch_size,old_patch_size), grid_size)
