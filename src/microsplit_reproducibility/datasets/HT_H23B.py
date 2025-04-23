@@ -2,63 +2,8 @@ import os
 
 import numpy as np
 
-import nd2
-from nis2pyr.reader import read_nd2file
-
 from careamics.lvae_training.dataset import DataSplitType
 from careamics.lvae_training.dataset.utils.data_utils import get_datasplit_tuples
-
-
-def get_ms_based_datafiles(ms: str):
-    return [f"Set{i}/uSplit_{ms}.nd2" for i in range(1, 7)]
-
-
-def get_raw_files_dict():
-    files_dict = {
-        "high": [
-            "uSplit_14022025_highSNR.nd2",
-            "uSplit_20022025_highSNR.nd2",
-            "uSplit_20022025_001_highSNR.nd2",
-        ],
-        "mid": [
-            "uSplit_14022025_midSNR.nd2",
-            "uSplit_20022025_midSNR.nd2",
-            "uSplit_20022025_001_midSNR.nd2",
-        ],
-        "low": [
-            "uSplit_14022025_lowSNR.nd2",
-            "uSplit_20022025_lowSNR.nd2",
-            "uSplit_20022025_001_lowSNR.nd2",
-        ],
-        "verylow": [
-            "uSplit_14022025_verylowSNR.nd2",
-            "uSplit_20022025_verylowSNR.nd2",
-            "uSplit_20022025_001_verylowSNR.nd2",
-        ],
-        "2ms": get_ms_based_datafiles("2ms"),
-        "3ms": get_ms_based_datafiles("3ms"),
-        "5ms": get_ms_based_datafiles("5ms"),
-        "20ms": get_ms_based_datafiles("20ms"),
-        "500ms": get_ms_based_datafiles("500ms"),
-    }
-    # check that the order is correct
-    keys = ["high", "mid", "low", "verylow"]
-    for key1 in keys:
-        filetokens1 = list(map(lambda x: x.replace(key1, ""), files_dict[key1]))
-        for key2 in keys:
-            filetokens2 = list(map(lambda x: x.replace(key2, ""), files_dict[key2]))
-            assert np.array_equal(
-                filetokens1, filetokens2
-            ), f"File tokens are not equal for {key1} and {key2}"
-    return files_dict
-
-
-def load_7D(fpath):
-    print(f"Loading from {fpath}")
-    with nd2.ND2File(fpath) as nd2file:
-        # Stdout: ND2 dimensions: {'P': 20, 'C': 19, 'Y': 1608, 'X': 1608}; RGB: False; datatype: uint16; legacy: False
-        data = read_nd2file(nd2file)
-    return data
 
 
 def load_one_fpath(fpath, channel_list):

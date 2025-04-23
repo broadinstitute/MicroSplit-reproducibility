@@ -2,23 +2,8 @@ from typing import Literal
 
 from careamics.lvae_training.dataset import DatasetConfig, DataSplitType, DataType
 
-CH_IDX_LIST = [1, 2, 3, 17]
 
-
-class HTH23BDataConfig(DatasetConfig):
-    dset_type: Literal[
-        "high", "mid", "low", "verylow", "2ms", "3ms", "5ms", "20ms", "500ms"
-    ]
-    # TODO: add description
-    
-    channel_idx_list: list
-    # TODO: add description
-
-
-def get_data_configs(
-    dset_type: Literal["high", "mid", "low", "verylow", "2ms", "3ms", "5ms", "20ms", "500ms"],
-    channel_idx_list: list = CH_IDX_LIST,
-) -> tuple[HTH23BDataConfig, HTH23BDataConfig, HTH23BDataConfig]:
+def get_data_configs() -> tuple[DatasetConfig, DatasetConfig, DatasetConfig]:
     """Get the data configurations to use at training time.
     
     Parameters
@@ -33,16 +18,12 @@ def get_data_configs(
     tuple[HTLIF24DataConfig, HTLIF24DataConfig]
         The train, validation and test data configurations.
     """
-    train_data_config = HTH23BDataConfig(
+    train_data_config = DatasetConfig(
         data_type=DataType.HTH23BData,
-        dset_type=dset_type,
         datasplit_type=DataSplitType.Train,
         image_size=[64, 64],
         grid_size=32,
-        channel_idx_list=channel_idx_list,
-        num_channels=len(channel_idx_list),
-        input_idx=len(channel_idx_list) - 1,
-        target_idx_list=list(range(len(channel_idx_list) - 1)),
+        num_channels=2,
         multiscale_lowres_count=3,
         poisson_noise_factor=-1,
         enable_gaussian_noise=False,
