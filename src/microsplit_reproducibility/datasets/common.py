@@ -28,7 +28,7 @@ def create_train_val_datasets(
         # DataType.ExpMicroscopyV1,
         DataType.ExpMicroscopyV2,
         DataType.TavernaSox2GolgiV2,
-        DataType.Pavia3SeqData,
+        DataType.PaviaP24Data,
     ]:
         dataset_class = MultiFileDset
     elif train_config.multiscale_lowres_count > 1:

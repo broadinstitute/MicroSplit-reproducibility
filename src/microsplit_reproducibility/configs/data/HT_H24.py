@@ -11,7 +11,7 @@ def get_data_configs() -> tuple[HT_H24Config, HT_H24Config]:
     train_data_config = HT_H24Config(
         datasplit_type=DataSplitType.Train,
         image_size=(9, 64, 64),
-        grid_size=32,
+        grid_size=(9, 32, 32),
         multiscale_lowres_count=1,
         data_type=DataType.HTH24Data,
         depth3D=9,
