@@ -32,6 +32,10 @@ def get_all_channel_list(target_channel_list):
         '12' : 11,
         '13' : 12,
         '23' : 13,
+        '012' : 14,
+        '013' : 15,
+        '023' : 16,
+        '123' : 17
     }
     return target_channel_list + [input_channel_index_dict[''.join([str(i) for i in target_channel_list])]]
 
