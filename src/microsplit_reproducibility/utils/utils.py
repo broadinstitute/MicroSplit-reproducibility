@@ -137,8 +137,6 @@ def clean_ax(ax):
     ax.tick_params(left=False, right=False, top=False, bottom=False)
 
 
-
-
 def plot_input_patches(dataset, num_channels: int, num_samples: int = 3, samples_idxs=None, patch_size=None):
     old_patch_size = None
     if patch_size is not None:
