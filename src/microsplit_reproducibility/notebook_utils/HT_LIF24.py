@@ -32,6 +32,10 @@ def get_all_channel_list(target_channel_list):
         '12' : 11,
         '13' : 12,
         '23' : 13,
+        '012' : 14,
+        '013' : 15,
+        '023' : 16,
+        '123' : 17
     }
     return target_channel_list + [input_channel_index_dict[''.join([str(i) for i in target_channel_list])]]
 
@@ -119,12 +123,9 @@ def full_frame_evaluation(stitched_predictions, tar, inp):
         vmax = stitched_predictions[...,i].max()
         ax[0,i+1].imshow(tar[...,i], vmin=vmin, vmax=vmax)
         ax[1,i+1].imshow(stitched_predictions[...,i], vmin=vmin, vmax=vmax)
-
+        ax[0,i+1].set_title(f"Channel {i+1}", fontsize=15)
     # disable the axis for ax[1,0]
-    ax[1,0].axis('off')
     ax[0,0].set_title("Input", fontsize=15)
-    ax[0,1].set_title("Channel 1", fontsize=15)
-    ax[0,2].set_title("Channel 2", fontsize=15)
     # set y labels on the right for ax[0,2]
     ax[0,2].yaxis.set_label_position("right")
     ax[0,2].set_ylabel("Target", fontsize=15)
