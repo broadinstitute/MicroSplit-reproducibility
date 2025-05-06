@@ -1,8 +1,8 @@
 from careamics.lvae_training.dataset import DatasetConfig, DataSplitType, DataType
-
+from typing import Optional
 
 class HTH23BConfig(DatasetConfig):
-    channel_list: list[str] = ["puncta", "foreground"]
+    channel_list: Optional[list[str]] = ["puncta", "foreground"]
     background_values: list[int] = [0, 0]
 
 

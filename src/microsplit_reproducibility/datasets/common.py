@@ -1,17 +1,18 @@
 from typing import Callable, Union
 
 import torch
-from torch.utils.data import Dataset
 from numpy.typing import NDArray
 
 from careamics.lvae_training.dataset import DatasetConfig, DataType
 from careamics.lvae_training.dataset import (
     LCMultiChDloader,
     MultiChDloader,
+    MultiChDloaderRef,
     MultiFileDset,
+    MultiCropDset
 )
 
-SplittingDataset = Union[LCMultiChDloader, MultiChDloader, MultiFileDset]
+SplittingDataset = Union[LCMultiChDloader, MultiChDloader, MultiFileDset, MultiCropDset]
 
 
 def create_train_val_datasets(
@@ -33,6 +34,9 @@ def create_train_val_datasets(
         dataset_class = MultiFileDset
     elif train_config.multiscale_lowres_count > 1:
         dataset_class = LCMultiChDloader
+    elif train_config.data_type in [
+        DataType.HTH23BData]:
+        dataset_class = MultiChDloaderRef
     else:
         dataset_class = MultiChDloader
 
