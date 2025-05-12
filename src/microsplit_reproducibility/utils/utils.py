@@ -191,7 +191,11 @@ def plot_input_patches_3d(dataset, num_channels: int, num_samples: int = 3, samp
     input_count = dataset[0][0].shape[0]
     img_sz = 3
     # Plot all dimensions of the selected samples
-    _,ax = plt.subplots(figsize=(img_sz*(input_count + num_channels), img_sz*num_samples), ncols=(input_count + num_channels), nrows=num_samples)
+    _, ax = plt.subplots(
+        figsize=(img_sz*(input_count + num_channels), img_sz*num_samples),
+        ncols=(input_count + num_channels),
+        nrows=num_samples
+    )
 
     for i, sample_idx in enumerate(random_samples):
         inp, sample = dataset[sample_idx]  # Get the target data of the sample
