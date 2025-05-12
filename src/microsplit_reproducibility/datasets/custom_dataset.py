@@ -83,9 +83,9 @@ def get_train_val_data(
     train_idx, val_idx, test_idx = get_datasplit_tuples(
         val_fraction, test_fraction, len(data)
     )
-    val_idx = train_idx
-    test_idx = train_idx
-    # TODO temporary hack
+    # FIXME: this is a hack to make the data split work with 2D custom datasets
+    # val_idx = train_idx
+    # test_idx = train_idx
     if datasplit_type == DataSplitType.All:
         data = data.astype(np.float64)
     elif datasplit_type == DataSplitType.Train:

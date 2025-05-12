@@ -21,9 +21,14 @@ def load_pretrained_model(model: VAEModule, ckpt_path):
     print(f"Loaded model from {ckpt_path}")
 
 
-def get_unnormalized_predictions(model: VAEModule, dset: SplittingDataset, 
-                                 mmse_count, num_workers=4, grid_size=32,
-                                 batch_size=8):
+def get_unnormalized_predictions(
+    model: VAEModule, 
+    dset: SplittingDataset, 
+    mmse_count,
+    num_workers=4,
+    grid_size=32,
+    batch_size=8
+):
     """
     Get the stitched predictions which have been unnormlized.
     """
