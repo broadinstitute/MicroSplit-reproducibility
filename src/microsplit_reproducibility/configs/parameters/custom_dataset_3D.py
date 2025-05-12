@@ -14,7 +14,7 @@ def _get_nm_paths(
 
 def get_microsplit_parameters(
     algorithm: str,
-    img_size: tuple[int, ...],
+    img_size: tuple[int, int, int],
     noise_model_path: str,
     target_channels: int = 2,
     multiscale_count: int = 1,
@@ -22,7 +22,7 @@ def get_microsplit_parameters(
     lr: float = 1e-3,
     lr_scheduler_patience: int = 10,
     earlystop_patience: int = 200,
-    num_epochs: int = 50,
+    num_epochs: int = 10,
     num_workers: int = 4,
     mmse_count: int = 50,
     grid_size: int = 32,
@@ -49,5 +49,5 @@ def get_microsplit_parameters(
 
 
 def get_eval_params() -> dict:
-    raise NotImplementedError("Evaluation parameters not implemented for HT_LIF24.")
+    raise NotImplementedError("Evaluation parameters not implemented for custom dataset.")
     return SplittingParameters().model_dump()
