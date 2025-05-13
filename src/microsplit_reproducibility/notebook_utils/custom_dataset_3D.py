@@ -31,9 +31,7 @@ def get_unnormalized_predictions(
     Get the stitched predictions which have been unnormlized.
     """
     tile_size = model.model.image_size
-    tile_overlap = [
-        sh // 2 if sh > 2 else 1 for sh in tile_size
-    ]
+    grid_size = [tile_size[0]] + [sh // 2 for sh in tile_size[1:]]
     
     # You might need to adjust the batch size depending on the available memory
     stitched_predictions, stitched_stds = get_predictions(
@@ -43,7 +41,7 @@ def get_unnormalized_predictions(
         num_workers=num_workers,
         mmse_count=mmse_count,
         tile_size=tile_size,
-        grid_size=tile_overlap,
+        grid_size=grid_size,
     )
     
     # NOTE: this "data" key is actually the path the data is saved in ...
@@ -199,16 +197,21 @@ def plot_metrics(df):
         a.set_xlabel("Epoch")
 
 
-def show_sampling(dset, model, ax=None):
+def show_sampling(dset, model, ax=None, z_idx=None):
     idx_list = pick_random_inputs_with_content(dset)
+    inp_patch, tar_patch = dset[idx_list[0]]
+    
     # inp, S1, S2, diff, mmse, tar
     ncols=6
     imgsz = 3
     if ax is None:
-        _,ax = plt.subplots(figsize=(imgsz*ncols, imgsz*2), ncols=ncols, nrows=2)
-    inp_patch, tar_patch = dset[idx_list[0]]
-    ax[0,0].imshow(inp_patch[0])
-    ax[0,0].set_title("Input (Idx: {})".format(idx_list[0]))
+        _, ax = plt.subplots(figsize=(imgsz*ncols, imgsz*2), ncols=ncols, nrows=2)
+    
+    if z_idx is None:
+        z_idx = np.random.randint(0, tar_patch.shape[1])
+    
+    ax[0, 0].imshow(inp_patch[0, z_idx])
+    ax[0, 0].set_title("Input (Idx: {})".format(idx_list[0]))
 
     samples = []
     n_samples = 50
@@ -217,22 +220,30 @@ def show_sampling(dset, model, ax=None):
     for _ in range(n_samples):
         with torch.no_grad():
             pred_patch,_ = model(torch.Tensor(inp_patch).unsqueeze(0).to(model.device))
-            samples.append(pred_patch[0,:tar_patch.shape[0]].cpu().numpy())
-    samples = np.array(samples)
+            samples.append(pred_patch[0, :tar_patch.shape[0]].cpu().numpy())
+    samples = np.array(samples) # (MMSE, C, Z, Y, X)
+    # select z slice
+    samples = samples[:, :, z_idx, ...]
 
-    ax[0,1].imshow(samples[0,0]); ax[0,1].set_title("Sample 1")
-    ax[0,2].imshow(samples[1,0]); ax[0,2].set_title("Sample 2")
-    ax[0,3].imshow(samples[0,0] - samples[1,0], cmap='coolwarm'); ax[0,3].set_title("S1 - S2")
-    ax[0,4].imshow(np.mean(samples[:,0], axis=0)); ax[0,4].set_title("MMSE")
-    ax[0,5].imshow(tar_patch[0]); ax[0,5].set_title("Target")
+    ax[0, 1].imshow(samples[0, 0])
+    ax[0, 1].set_title("Sample 1")
+    ax[0, 2].imshow(samples[1, 0])
+    ax[0, 2].set_title("Sample 2")
+    ax[0, 3].imshow(samples[0, 0] - samples[1, 0], cmap="coolwarm")
+    ax[0, 3].set_title("S1 - S2")
+    ax[0, 4].imshow(np.mean(samples[:, 0], axis=0))
+    ax[0, 4].set_title("MMSE")
+    ax[0, 5].imshow(tar_patch[0, z_idx])
+    ax[0, 5].set_title("Target")
     # second channel
-    ax[1,1].imshow(samples[0,1])
-    ax[1,2].imshow(samples[1,1])
-    ax[1,3].imshow(samples[0,1] - samples[1,1], cmap='coolwarm')
-    ax[1,4].imshow(np.mean(samples[:,1], axis=0))
-    ax[1,5].imshow(tar_patch[1])
+    ax[1, 1].imshow(samples[0, 1])
+    ax[1, 2].imshow(samples[1, 1])
+    ax[1, 3].imshow(samples[0, 1] - samples[1, 1], cmap="coolwarm")
+    ax[1, 4].imshow(np.mean(samples[:, 1], axis=0))
+    ax[1, 5].imshow(tar_patch[1, z_idx])
 
-    ax[1,0].axis('off')
+    ax[1, 0].axis('off')
+
 
 def get_highsnr_data(train_data_config, val_data_config, test_data_config, evaluate_on_validation):
     highsnr_exposure_duration = '500ms'

@@ -5,6 +5,7 @@ from careamics.lvae_training.dataset import DataSplitType, DatasetConfig, DataTy
 def get_data_configs(
     image_size: list[int],
     num_channels: int,
+    **kwargs,
 ) -> tuple[DatasetConfig, DatasetConfig, DatasetConfig]:
     """Get the data configurations to use at training time.
     
@@ -20,6 +21,11 @@ def get_data_configs(
     tuple[HTLIF24DataConfig, HTLIF24DataConfig]
         The train, validation and test data configurations.
     """
+    # if "num_z_slices" in kwargs:
+    #     num_z_slices = kwargs["num_z_slices"]
+    # else:
+    #     raise ValueError("`num_z_slices` must be provided!!!")
+    
     patch_overlap = (image_size[0], image_size[1] // 2, image_size[2] // 2)
     
     train_data_config = DatasetConfig(
