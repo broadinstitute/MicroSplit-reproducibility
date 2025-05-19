@@ -28,7 +28,6 @@ def create_train_val_datasets(
         # DataType.ExpMicroscopyV1,
         DataType.ExpMicroscopyV2,
         DataType.TavernaSox2GolgiV2,
-        DataType.PaviaP24Data,
     ]:
         dataset_class = MultiFileDset
     elif train_config.multiscale_lowres_count > 1:
@@ -82,6 +81,7 @@ def create_train_val_datasets(
 
 def get_target_images(test_dset: SplittingDataset) -> NDArray:
     """Get the target images."""
-    if test_dset.data_type in [DataType.HTIba1Ki67,]:
+    if test_dset.data_type in [
+        DataType.HTIba1Ki67,
+    ]:
         return test_dset._data
-    
