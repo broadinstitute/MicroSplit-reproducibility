@@ -6,10 +6,11 @@ class HTH23BConfig(DatasetConfig):
     background_values: list[int] = [0, 0]
 
 
-def get_data_configs() -> tuple[HTH23BConfig, HTH23BConfig, HTH23BConfig]:
+def get_data_configs(channel_list) -> tuple[HTH23BConfig, HTH23BConfig, HTH23BConfig]:
     train_data_config = HTH23BConfig(
         data_type=DataType.HTH23BData,
         datasplit_type=DataSplitType.Train,
+        channel_list=channel_list,
         image_size=(64, 64),
         grid_size=32,
         poisson_noise_factor=-1,
@@ -20,6 +21,8 @@ def get_data_configs() -> tuple[HTH23BConfig, HTH23BConfig, HTH23BConfig]:
         use_one_mu_std=True,
         train_aug_rotate=True,
         target_separate_normalization=True,
+        uncorrelated_channels=True,
+        uncorrelated_channel_probab=1,
         input_is_sum=True,
         padding_kwargs={"mode": "reflect"},
         overlapping_padding_kwargs={"mode": "reflect"},

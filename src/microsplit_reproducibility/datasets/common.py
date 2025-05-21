@@ -3,7 +3,7 @@ from typing import Callable, Union
 import torch
 from numpy.typing import NDArray
 
-from careamics.lvae_training.dataset import DatasetConfig, DataType
+from careamics.lvae_training.dataset import DatasetConfig, DataType, DataSplitType
 from careamics.lvae_training.dataset import (
     LCMultiChDloader,
     MultiChDloader,
@@ -49,6 +49,9 @@ def create_train_val_datasets(
     )
     max_val = train_data.get_max_val()
     val_config.max_val = max_val
+    if train_config.datasplit_type == DataSplitType.All:
+        val_config.datasplit_type = DataSplitType.All
+        test_config.datasplit_type = DataSplitType.All # TODO temporary hack
     val_data = dataset_class(
         val_config,
         datapath,

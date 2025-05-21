@@ -54,6 +54,7 @@ def get_train_val_data(
     train_idx, val_idx, test_idx = get_datasplit_tuples(
         val_fraction, test_fraction, len(data)
     )
+    train_idx = train_idx + val_idx + test_idx
     val_idx = train_idx
     test_idx = train_idx
     # TODO temporary hack
