@@ -22,6 +22,8 @@ def get_microsplit_parameters(
     return SplittingParameters(
         algorithm="denoisplit",
         img_size=(9, 64, 64),
+        encoder_conv_strides=[1, 2, 2],
+        decoder_conv_strides=[1, 2, 2],
         target_channels=2,
         multiscale_count=1,
         predict_logvar="pixelwise",

@@ -12,9 +12,6 @@ import os
 from pathlib import Path
 import torch
 import pooch
-import requests
-from tqdm.notebook import tqdm
-import logging
 
 
 def load_pretrained_model(model: VAEModule, ckpt_path):
@@ -44,8 +41,8 @@ def get_all_channel_list(target_channel_list):
 def get_unnormalized_predictions(
     model: VAEModule,
     dset: SplittingDataset,
-    data_key,
     mmse_count,
+    data_key="ht_h24.zip.unzip",
     num_workers=4,
     grid_size=32,
     batch_size=8,
@@ -63,12 +60,9 @@ def get_unnormalized_predictions(
         tile_size=model.model.image_size,
         grid_size=grid_size,
     )
-    
+
     stitched_predictions = stitched_predictions[data_key]
     stitched_stds = stitched_stds[data_key]
-
-    stitched_predictions = stitched_predictions[..., :2]
-    stitched_stds = stitched_stds[..., :2]
 
     mean_params, std_params = dset.get_mean_std()
     unnorm_stitched_predictions = stitched_predictions * std_params[
@@ -142,13 +136,13 @@ def full_frame_evaluation(stitched_predictions, tar, z_idx=None):
 
     ncols = tar.shape[-1]
     nrows = 2
-    fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 5, nrows * 5))
+    _, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 5, nrows * 5))
 
     if z_idx is None:
         z_idx = np.random.randint(0, tar.shape[0])
-    
+
     print(f"Using Z index: {z_idx}")
-        
+
     for i in range(ncols):
         vmin = stitched_predictions[z_idx, ..., i].min()
         vmax = stitched_predictions[z_idx, ..., i].max()
@@ -233,7 +227,7 @@ def show_sampling(dset, model, ax=None, z_idx=4):
     for _ in range(n_samples):
         with torch.no_grad():
             pred_patch, _ = model(torch.Tensor(inp_patch).unsqueeze(0).to(model.device))
-            samples.append(pred_patch[0, :tar_patch.shape[0], z_idx].cpu().numpy())
+            samples.append(pred_patch[0, : tar_patch.shape[0], z_idx].cpu().numpy())
     samples = np.array(samples)
 
     ax[0, 1].imshow(samples[0, 0])
@@ -262,8 +256,8 @@ def get_highsnr_data(
     highsnr_exposure_duration = "500ms"
 
     DATA = pooch.create(
-        path=f"./data/",
-        base_url=f"https://download.fht.org/jug/msplit/ht_lif24/data/",
+        path="./data/",
+        base_url="https://download.fht.org/jug/msplit/ht_lif24/data/",
         registry={f"ht_lif24_{highsnr_exposure_duration}.zip": None},
     )
     for fname in DATA.registry:

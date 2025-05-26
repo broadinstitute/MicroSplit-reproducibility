@@ -17,7 +17,13 @@ class SplittingParameters(BaseModel):
 
     img_size: tuple[int, ...]
     """Spatial size of the input image."""
-
+    
+    encoder_conv_strides: list[int] = Field(default=[2, 2])
+    """Strides for the encoder convolutional layers."""
+    
+    decoder_conv_strides: list[int] = Field(default=[2, 2])
+    """Strides for the decoder convolutional layers."""
+    
     target_channels: int = Field(..., ge=1)
     """Number of channels in the target image."""
 

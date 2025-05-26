@@ -24,8 +24,8 @@ def get_model_config(**kwargs) -> LVAEModel:
     return LVAEModel(
         architecture="LVAE",
         input_shape=kwargs["img_size"],
-        encoder_conv_strides=[2, 2],
-        decoder_conv_strides=[2, 2],
+        encoder_conv_strides=kwargs["encoder_conv_strides"],
+        decoder_conv_strides=kwargs["decoder_conv_strides"],
         multiscale_count=kwargs["multiscale_count"],
         z_dims=[128, 128, 128, 128],
         output_channels=kwargs["target_channels"],
