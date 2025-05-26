@@ -20,7 +20,8 @@ import logging
 def load_pretrained_model(model: VAEModule, ckpt_path):
     device = get_device()
     ckpt_dict = torch.load(ckpt_path, map_location=device, weights_only=True)
-    model.load_state_dict(ckpt_dict["state_dict"], strict=False)
+    # this will not load noise model weight, but it is not needed for inference
+    model.model.load_state_dict(ckpt_dict["state_dict"], strict=False)
     print(f"Loaded model from {ckpt_path}")
 
 
