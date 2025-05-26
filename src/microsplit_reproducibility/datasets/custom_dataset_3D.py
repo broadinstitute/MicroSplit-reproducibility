@@ -1,5 +1,6 @@
 import os
 from pathlib import Path
+from typing import Literal
 
 import numpy as np
 
@@ -11,17 +12,18 @@ from careamics.dataset.dataset_utils.dataset_utils import reshape_array
 
 
 def load_one_file(fpath):
+    """Load a single 3D image file."""
     data = tifffile.imread(fpath)
-    if len(data.shape) == 2:
-        axes = 'YX'
-    elif len(data.shape) == 3:
-        axes = 'SYX' 
+    if len(data.shape) == 3:
+        axes = 'ZXY'
     elif len(data.shape) == 4:
-        axes = 'STYX'
+        axes = 'SZXY' 
+    elif len(data.shape) == 5:
+        axes = 'STZXY'
     else: 
         raise ValueError(f"Invalid data shape: {data.shape}")
     data = reshape_array(data, axes)
-    data = data.reshape(-1, data.shape[-2], data.shape[-1])
+    data = data.reshape(-1, data.shape[-3], data.shape[-2], data.shape[-1])
     return data
 
 
@@ -35,7 +37,8 @@ def load_data(datadir):
         image_files = sorted(f for f in channel_dir.iterdir() if f.is_file())
         channel_images = [load_one_file(image_path) for image_path in image_files]
             
-        channel_stack = np.concatenate(channel_images, axis=0)
+        channel_stack = np.concatenate(channel_images, axis=0) # FIXME: this line works iff images have
+        # a singleton channel dimension. Specify in the notebook or change with `torch.stack`??
         channels_data.append(channel_stack)
     
     final_data = np.stack(channels_data, axis=-1)
@@ -54,10 +57,9 @@ def get_train_val_data(
     train_idx, val_idx, test_idx = get_datasplit_tuples(
         val_fraction, test_fraction, len(data)
     )
-    train_idx = train_idx + val_idx + test_idx
-    val_idx = train_idx
-    test_idx = train_idx
-    # TODO temporary hack
+    # FIXME: this is a hack to make the data split work with 2D custom datasets
+    # val_idx = train_idx
+    # test_idx = train_idx
     if datasplit_type == DataSplitType.All:
         data = data.astype(np.float64)
     elif datasplit_type == DataSplitType.Train:

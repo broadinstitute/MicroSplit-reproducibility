@@ -10,10 +10,10 @@ def get_data_configs(
     
     Parameters
     ----------
-    dset_type : Literal["high", "mid", "low", "verylow", "2ms", "3ms", "5ms", "20ms", "500ms"]
-        The dataset type to use.
-    channel_idx_list : list[Literal[1, 2, 3, 17]]
-        The channel indices to use.
+    image_size : list[int]
+        The image size to use for the data.
+    num_channels : int
+        The number of channels in the data.
     
     Returns
     -------
