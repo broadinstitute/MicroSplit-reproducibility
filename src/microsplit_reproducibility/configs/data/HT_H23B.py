@@ -6,11 +6,10 @@ class HTH23BConfig(DatasetConfig):
     background_values: list[int] = [0, 0]
 
 
-def get_data_configs(channel_list) -> tuple[HTH23BConfig, HTH23BConfig, HTH23BConfig]:
+def get_data_configs() -> tuple[HTH23BConfig, HTH23BConfig, HTH23BConfig]:
     train_data_config = HTH23BConfig(
         data_type=DataType.HTH23BData,
         datasplit_type=DataSplitType.Train,
-        channel_list=channel_list,
         image_size=(64, 64),
         grid_size=32,
         poisson_noise_factor=-1,

@@ -12,15 +12,14 @@ import os
 from pathlib import Path
 import torch
 import pooch
-import requests
-from tqdm.notebook import tqdm
-import logging
 
 
 def load_pretrained_model(model: VAEModule, ckpt_path):
     device = get_device()
     ckpt_dict = torch.load(ckpt_path, map_location=device, weights_only=True)
-    # this will not load noise model weight, but it is not needed for inference
+    # TODO, IMPORTANT: this might not work for the model trained in the 01_train
+    # For pretrained models, it will load all the weights except the noise model, which 
+    # is not needed for inference,
     model.model.load_state_dict(ckpt_dict["state_dict"], strict=False)
     print(f"Loaded model from {ckpt_path}")
 
@@ -260,8 +259,8 @@ def get_highsnr_data(
     highsnr_exposure_duration = "500ms"
 
     DATA = pooch.create(
-        path=f"./data/",
-        base_url=f"https://download.fht.org/jug/msplit/ht_lif24/data/",
+        path="./data/",
+        base_url="https://download.fht.org/jug/msplit/ht_lif24/data/",
         registry={f"ht_lif24_{highsnr_exposure_duration}.zip": None},
     )
     for fname in DATA.registry:
