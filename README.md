@@ -45,7 +45,7 @@ In order to run the examples, you will need to install PyTorch, CAREamics and th
 
 1. Create a new environment with the package manager of your choice, we recommand [mamba](https://mamba.readthedocs.io/en/latest/installation/micromamba-installation.html), but you can also use [conda](https://docs.anaconda.com/miniconda/) (in which case, substitute `mamba` for `conda` in the following bash commands).
     ```bash
-    mamba create -n microsplit python=3.9
+    mamba create -n microsplit python=3.10
     mamba activate microsplit
     ```
 > [!TIP]  
