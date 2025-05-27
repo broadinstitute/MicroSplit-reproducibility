@@ -17,25 +17,15 @@ import pooch
 def load_pretrained_model(model: VAEModule, ckpt_path):
     device = get_device()
     ckpt_dict = torch.load(ckpt_path, map_location=device, weights_only=True)
-    model.load_state_dict(ckpt_dict["state_dict"], strict=False)
+    if ckpt_path.startswith("checkpoints"):
+        model.load_state_dict(ckpt_dict["state_dict"], strict=True)
+    elif ckpt_path.startswith("pretrained_checkpoints"):
+        model.model.load_state_dict(ckpt_dict["state_dict"], strict=False)
+    else:
+        raise ValueError(
+            "Checkpoint path must start with 'checkpoints' or 'pretrained_checkpoints'."
+        )
     print(f"Loaded model from {ckpt_path}")
-
-
-def get_all_channel_list(target_channel_list):
-    """
-    Adds the input channel index to the target channel list.
-    """
-    input_channel_index_dict = {
-        "01": 8,
-        "02": 9,
-        "03": 10,
-        "12": 11,
-        "13": 12,
-        "23": 13,
-    }
-    return target_channel_list + [
-        input_channel_index_dict["".join([str(i) for i in target_channel_list])]
-    ]
 
 
 def get_unnormalized_predictions(
@@ -131,16 +121,18 @@ def pick_random_patches_with_content(tar, patch_size):
 
 def full_frame_evaluation(inp, pred):
 
-    _, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 15))
+    _, ax = plt.subplots(nrows=1, ncols=3, figsize=(20, 25))
 
     vmin = inp[0].min()
     vmax = inp[0].max()
     ax[0].imshow(inp[0], vmin=vmin, vmax=vmax)
     ax[1].imshow(pred[0][0], vmin=vmin, vmax=vmax)
+    ax[2].imshow(pred[0][1], vmin=vmin, vmax=vmax)
 
     # disable the axis for ax[1,0]
     ax[0].set_title("Input", fontsize=15)
-    ax[1].set_title("Prediction", fontsize=15)
+    ax[1].set_title("Prediction Channel 1", fontsize=15)
+    ax[2].set_title("Prediction Channel 2", fontsize=15)
 
 
 def find_recent_metrics():
