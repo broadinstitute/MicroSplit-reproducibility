@@ -129,27 +129,18 @@ def pick_random_patches_with_content(tar, patch_size):
     return final_indices
 
 
-def full_frame_evaluation(tar, inp):
+def full_frame_evaluation(inp, pred):
 
-    ncols = len(inp)
-    nrows = len(tar)
-    _, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 5, nrows * 5))
-    for i in range(ncols):
-        vmin = inp[i].min()
-        vmax = inp[i].max()
-        ax[0, i].imshow(tar[i], vmin=vmin, vmax=vmax)
-        ax[1, i].imshow(inp[i], vmin=vmin, vmax=vmax)
+    _, ax = plt.subplots(nrows=1, ncols=2, figsize=(10, 15))
+
+    vmin = inp[0].min()
+    vmax = inp[0].max()
+    ax[0].imshow(inp[0], vmin=vmin, vmax=vmax)
+    ax[1].imshow(pred[0][0], vmin=vmin, vmax=vmax)
 
     # disable the axis for ax[1,0]
-    ax[1, 0].axis("off")
-    ax[0, 0].set_title("Channel 1", fontsize=15)
-    ax[0, 1].set_title("Channel 2", fontsize=15)
-    # set y labels on the right for ax[0,2]
-    ax[0, 2].yaxis.set_label_position("right")
-    ax[0, 2].set_ylabel("Target", fontsize=15)
-
-    ax[1, 2].yaxis.set_label_position("right")
-    ax[1, 2].set_ylabel("Predicted", fontsize=15)
+    ax[0].set_title("Input", fontsize=15)
+    ax[1].set_title("Prediction", fontsize=15)
 
 
 def find_recent_metrics():
