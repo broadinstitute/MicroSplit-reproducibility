@@ -14,6 +14,43 @@ import torch
 import pooch
 
 
+class Channels:
+    Nucleus = 0
+    MicroTubules = 1
+    NuclearMembrane = 2
+    Centromere = 3
+
+class ExposureDuration:
+    VeryLow = "2ms"
+    Low = "3ms"
+    Medium = "5ms"
+    High = "20ms"
+    VeryHigh = "500ms"
+
+
+def define_experiment_config(num_channels: int = 2, exposure: ExposureDuration = ExposureDuration.Medium):
+    if num_channels == 2:
+        target_channel_list = [Channels.MicroTubules, Channels.NuclearMembrane]
+        if exposure != ExposureDuration.Medium:
+            raise ValueError("For 2 channels, only Medium exposure is supported.")
+    elif num_channels == 3:
+        target_channel_list = [Channels.MicroTubules, Channels.NuclearMembrane, Channels.Centromere]
+    elif num_channels == 4:
+        target_channel_list = [Channels.Nucleus, Channels.MicroTubules, Channels.NuclearMembrane, Channels.Centromere]
+        if exposure != ExposureDuration.Medium:
+            raise ValueError("For 4 channels, only Medium exposure is supported.")
+    else:
+        raise ValueError("num_channels must be 2, 3, or 4.")
+    
+    total_channel_list = get_all_channel_list(target_channel_list)
+    print('Chosen structures:',target_channel_list)
+    print('All data channels to be loaded:', total_channel_list)
+    
+    return total_channel_list, target_channel_list, exposure
+
+    
+    
+
 def load_pretrained_model(model: VAEModule, ckpt_path):
     device = get_device()
     ckpt_dict = torch.load(ckpt_path, map_location=device, weights_only=True)
