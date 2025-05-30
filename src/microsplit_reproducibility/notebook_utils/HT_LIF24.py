@@ -49,15 +49,17 @@ def define_experiment_config(num_channels: int = 2, exposure: ExposureDuration =
     return total_channel_list, target_channel_list, exposure
 
     
-    
-
 def load_pretrained_model(model: VAEModule, ckpt_path):
     device = get_device()
     ckpt_dict = torch.load(ckpt_path, map_location=device, weights_only=True)
-    # TODO, IMPORTANT: this might not work for the model trained in the 01_train
-    # For pretrained models, it will load all the weights except the noise model, which 
-    # is not needed for inference,
-    model.model.load_state_dict(ckpt_dict["state_dict"], strict=False)
+    if ckpt_path.startswith("checkpoints"):
+        model.load_state_dict(ckpt_dict["state_dict"], strict=True)
+    elif ckpt_path.startswith("pretrained_checkpoints"):
+        model.model.load_state_dict(ckpt_dict["state_dict"], strict=False)
+    else:
+        raise ValueError(
+            "Checkpoint path must start with 'checkpoints' or 'pretrained_checkpoints'."
+        )
     print(f"Loaded model from {ckpt_path}")
 
 
