@@ -123,11 +123,9 @@ def full_frame_evaluation(inp, pred):
 
     _, ax = plt.subplots(nrows=1, ncols=3, figsize=(20, 25))
 
-    vmin = inp[0].min()
-    vmax = inp[0].max()
-    ax[0].imshow(inp[0], vmin=vmin, vmax=vmax)
-    ax[1].imshow(pred[0][0], vmin=vmin, vmax=vmax)
-    ax[2].imshow(pred[0][1], vmin=vmin, vmax=vmax)
+    ax[0].imshow(inp[0], vmax=np.quantile(inp[0], 0.99))
+    ax[1].imshow(pred[0][0], vmax=np.quantile(inp[0], 0.99))
+    ax[2].imshow(pred[0][1], vmax=np.quantile(inp[0], 0.99))
 
     # disable the axis for ax[1,0]
     ax[0].set_title("Input", fontsize=15)

@@ -42,6 +42,7 @@ def define_experiment_config(num_channels: int = 2, exposure: ExposureDuration =
     else:
         raise ValueError("num_channels must be 2, 3, or 4.")
     
+    target_channel_list = sorted(target_channel_list)
     total_channel_list = get_all_channel_list(target_channel_list)
     print('Chosen structures:',target_channel_list)
     print('All data channels to be loaded:', total_channel_list)
@@ -194,6 +195,7 @@ def full_frame_evaluation(stitched_predictions, tar, inp):
         ax[0, i + 1].set_title(f"Channel {i+1}", fontsize=15)
     # disable the axis for ax[1,0]
     ax[0, 0].set_title("Input", fontsize=15)
+    ax[1, 0].axis("off")
     # set y labels on the right for ax[0,2]
     ax[0, 2].yaxis.set_label_position("right")
     ax[0, 2].set_ylabel("Target", fontsize=15)
