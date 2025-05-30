@@ -30,7 +30,7 @@ class ExposureDuration:
 
 def define_experiment_config(num_channels: int = 2, exposure: ExposureDuration = ExposureDuration.Medium):
     if num_channels == 2:
-        target_channel_list = [Channels.MicroTubules, Channels.NuclearMembrane]
+        target_channel_list = [Channels.Nucleus, Channels.MicroTubules]
         if exposure != ExposureDuration.Medium:
             raise ValueError("For 2 channels, only Medium exposure is supported.")
     elif num_channels == 3:
