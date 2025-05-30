@@ -15,19 +15,19 @@ def load_one_file(fpath):
     """Load a single 2D image file."""
     data = tifffile.imread(fpath)
     if len(data.shape) == 2:
-        axes = 'YX'
+        axes = "YX"
     elif len(data.shape) == 3:
-        axes = 'SYX' 
+        axes = "SYX"
     elif len(data.shape) == 4:
-        axes = 'STYX'
-    else: 
+        axes = "STYX"
+    else:
         raise ValueError(f"Invalid data shape: {data.shape}")
     data = reshape_array(data, axes)
     data = data.reshape(-1, data.shape[-2], data.shape[-1])
     return data
 
 
-def load_data(datadir, ndim: Literal[2, 3]):
+def load_data(datadir):
     data_path = Path(datadir)
 
     channel_dirs = sorted(p for p in data_path.iterdir() if p.is_dir())
@@ -36,11 +36,13 @@ def load_data(datadir, ndim: Literal[2, 3]):
     for channel_dir in channel_dirs:
         image_files = sorted(f for f in channel_dir.iterdir() if f.is_file())
         channel_images = [load_one_file(image_path) for image_path in image_files]
-            
-        channel_stack = np.concatenate(channel_images, axis=0) # FIXME: this line works iff images have
+
+        channel_stack = np.concatenate(
+            channel_images, axis=0
+        )  # FIXME: this line works iff images have
         # a singleton channel dimension. Specify in the notebook or change with `torch.stack`??
         channels_data.append(channel_stack)
-    
+
     final_data = np.stack(channels_data, axis=-1)
     return final_data
 
