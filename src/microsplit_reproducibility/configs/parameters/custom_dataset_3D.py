@@ -36,6 +36,8 @@ def get_microsplit_parameters(
         predict_logvar="pixelwise",
         loss_type="denoisplit_musplit" if algorithm == "denoisplit" else "musplit",
         kl_type="kl_restricted",
+        encoder_conv_strides=[1,2,2],
+        decoder_conv_strides=[1,2,2],
         batch_size=batch_size,
         lr=lr,
         num_epochs=num_epochs,
