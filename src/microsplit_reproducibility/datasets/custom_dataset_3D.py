@@ -13,7 +13,7 @@ from careamics.dataset.dataset_utils.dataset_utils import reshape_array
 
 def load_one_file(fpath):
     """Load a single 3D image file."""
-    data = tifffile.imread(fpath)
+    data = tifffile.imread(fpath).astype(np.float32)
     if len(data.shape) == 3:
         axes = 'ZXY'
     elif len(data.shape) == 4:
@@ -61,13 +61,13 @@ def get_train_val_data(
     # val_idx = train_idx
     # test_idx = train_idx
     if datasplit_type == DataSplitType.All:
-        data = data.astype(np.float64)
+        data = data.astype(np.float32)
     elif datasplit_type == DataSplitType.Train:
-        data = data[train_idx].astype(np.float64)
+        data = data[train_idx].astype(np.float32)
     elif datasplit_type == DataSplitType.Val:
-        data = data[val_idx].astype(np.float64)
+        data = data[val_idx].astype(np.float32)
     elif datasplit_type == DataSplitType.Test:
-        data = data[test_idx].astype(np.float64)
+        data = data[test_idx].astype(np.float32)
     else:
         raise Exception("invalid datasplit")
 
