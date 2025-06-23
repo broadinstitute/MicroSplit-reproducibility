@@ -34,6 +34,7 @@ def get_unnormalized_predictions(
     data_key,
     mmse_count,
     num_workers=4,
+    tile_size=(64, 64),
     grid_size=32,
     batch_size=8,
 ):
@@ -47,7 +48,7 @@ def get_unnormalized_predictions(
         batch_size=batch_size,
         num_workers=num_workers,
         mmse_count=mmse_count,
-        tile_size=model.model.image_size,
+        tile_size=tile_size,
         grid_size=grid_size,
     )
 
