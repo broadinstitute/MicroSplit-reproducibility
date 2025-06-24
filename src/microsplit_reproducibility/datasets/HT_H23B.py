@@ -14,6 +14,14 @@ def load_tiff(path):
     return data
 
 
+def load_tiff_test(path, idx):
+    """
+    Returns a 4d numpy array: num_imgs*h*w*num_channels
+    """
+    data = imread(path, plugin="tifffile")[idx, ..., 1] # we only want the 2nd channel
+    return data
+
+
 def _pick_subset(weight_arr, skip_idxs, allocated_weight, thresh):
     output_idxs = []
     remaining_w = allocated_weight
@@ -89,7 +97,7 @@ def get_test_data(
     test_fraction=None,
     **kwargs,
 ):
-    data = [load_tiff(os.path.join(datadir, fname)) for fname in os.listdir(datadir)]
+    data = [load_tiff_test(os.path.join(datadir, fname), data_config.test_frame_idx) for fname in os.listdir(datadir)]
     print(f"Test: {len(data)}")
     # returning tuple because train dataset expects more than 1 channel
     return (data,)

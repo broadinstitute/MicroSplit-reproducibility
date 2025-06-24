@@ -4,9 +4,10 @@ from typing import Optional
 class HTH23BConfig(DatasetConfig):
     channel_list: Optional[list[str]] = ["puncta", "foreground"]
     background_values: list[int] = [0, 0]
+    test_frame_idx: int = 8  # Default test frame index
 
 
-def get_data_configs() -> tuple[HTH23BConfig, HTH23BConfig, HTH23BConfig]:
+def get_data_configs(test_frame_idx=8) -> tuple[HTH23BConfig, HTH23BConfig, HTH23BConfig]:
     train_data_config = HTH23BConfig(
         data_type=DataType.HTH23BData,
         datasplit_type=DataSplitType.Train,
@@ -37,6 +38,7 @@ def get_data_configs() -> tuple[HTH23BConfig, HTH23BConfig, HTH23BConfig]:
     test_data_config = val_data_config.model_copy(
         update=dict(
             datasplit_type=DataSplitType.Test,
+            test_frame_idx=test_frame_idx,
         )
     )
     return train_data_config, val_data_config, test_data_config
