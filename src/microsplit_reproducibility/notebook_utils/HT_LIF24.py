@@ -32,13 +32,17 @@ def define_experiment_config(num_channels: int = 2, exposure: ExposureDuration =
     if num_channels == 2:
         target_channel_list = [Channels.Nucleus, Channels.MicroTubules]
         if exposure != ExposureDuration.Medium:
-            raise ValueError("For 2 channels, only Medium exposure is supported.")
+            print("For this data combination pretrained checkpoints and/or noise \n"
+                  "models might not be available. Please check the missing parts \n"
+                  "before procedding to inference part.")
     elif num_channels == 3:
         target_channel_list = [Channels.MicroTubules, Channels.NuclearMembrane, Channels.Centromere]
     elif num_channels == 4:
         target_channel_list = [Channels.Nucleus, Channels.MicroTubules, Channels.NuclearMembrane, Channels.Centromere]
         if exposure != ExposureDuration.Medium:
-            raise ValueError("For 4 channels, only Medium exposure is supported.")
+            print("For this data combination pretrained checkpoints and/or noise \n"
+                  "models might not be available. Please check the missing parts \n"
+                  "before procedding to inference part.")
     else:
         raise ValueError("num_channels must be 2, 3, or 4.")
     
