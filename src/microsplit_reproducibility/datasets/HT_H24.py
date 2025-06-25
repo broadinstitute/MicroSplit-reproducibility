@@ -3,7 +3,6 @@ import os
 import numpy as np
 
 import nd2
-from nis2pyr.reader import read_nd2file
 
 from careamics.lvae_training.dataset import DataSplitType
 from careamics.lvae_training.dataset.utils.data_utils import get_datasplit_tuples
@@ -12,13 +11,14 @@ from careamics.lvae_training.dataset.utils.data_utils import get_datasplit_tuple
 def load_7D(fpath):
     print(f"Loading from {fpath}")
     with nd2.ND2File(fpath) as nd2file:
-        data = read_nd2file(nd2file)
+        data = nd2file.asarray()  
     return data
 
+#(1, 16, 69, 3, 1608, 1608, 1)
 
 def load_filtered_zstacks(fpath, zstart=20, zstop=44):
     data = load_7D(fpath)
-    return data[0, :, zstart:zstop, ..., 0]
+    return data[:, zstart:zstop, ...]
 
 
 def datafiles():
