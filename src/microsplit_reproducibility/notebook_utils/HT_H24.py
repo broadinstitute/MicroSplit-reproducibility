@@ -17,7 +17,14 @@ import pooch
 def load_pretrained_model(model: VAEModule, ckpt_path):
     device = get_device()
     ckpt_dict = torch.load(ckpt_path, map_location=device, weights_only=True)
-    model.load_state_dict(ckpt_dict["state_dict"], strict=False)
+    if ckpt_path.startswith("checkpoints"):
+        model.load_state_dict(ckpt_dict["state_dict"], strict=True)
+    elif ckpt_path.startswith("pretrained_checkpoints"):
+        model.model.load_state_dict(ckpt_dict["state_dict"], strict=False)
+    else:
+        raise ValueError(
+            "Checkpoint path must start with 'checkpoints' or 'pretrained_checkpoints'."
+        )
     print(f"Loaded model from {ckpt_path}")
 
 
