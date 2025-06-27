@@ -136,7 +136,7 @@ The notebooks were tested on multiple systems including Linux, Mac and Windows; 
 - (soon) [Noise models summary]()
 
 
-## Cite MicroSplit
+## MicroSplit Documentation
 
 <!--- Add citation --->
 
