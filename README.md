@@ -155,6 +155,9 @@ The notebooks were tested on multiple systems including Linux, Mac and Windows; 
 - [HT-LIF24 (20ms)](https://download.fht.org/jug/msplit/ht_lif24/data/ht_lif24_20ms.zip)
 - [HT-LIF24 (500ms)](https://download.fht.org/jug/msplit/ht_lif24/data/ht_lif24_500ms.zip)
 - [Chicago-Sch23](https://download.fht.org/jug/msplit/chicago_sch23/data/chicago_sch23.zip)
+- [HHMI-D25-8bit](https://download.fht.org/jug/msplit/hhmi_d25/hhmid25_8bit.zip)
+- [HHMI-D25-16bit](https://download.fht.org/jug/msplit/hhmi_d25/hhmi_d25_16bit.zip)
+- [HHMI-D25-16bit-0.25](https://download.fht.org/jug/msplit/hhmi_d25/hhmi_d25_16bit_binned.zip)
 
 ## License
 
