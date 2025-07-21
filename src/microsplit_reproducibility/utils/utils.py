@@ -164,8 +164,10 @@ def plot_input_patches(dataset, num_channels: int, num_samples: int = 3, samples
             else:    
                 ax[i, input_ch].set_title(f"Input LC[{input_ch}] ")
         # Plot each dimension
+        vmin = sample.min()
+        vmax = sample.max()
         for channel_idx in range(num_channels):
-            ax[i, input_count+channel_idx].imshow(sample[channel_idx])
+            ax[i, input_count+channel_idx].imshow(sample[channel_idx], vmin=vmin, vmax=vmax)
             ax[i, input_count+channel_idx].set_title(f"Channel {channel_idx + 1}")
     
     if old_patch_size is not None:
