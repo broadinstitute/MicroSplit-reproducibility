@@ -24,7 +24,7 @@ def get_data_configs(
         data_type=DataType.HTLIF24Data, # TODO temporary hack
         datasplit_type=DataSplitType.Train,
         image_size=image_size,
-        grid_size=32,
+        grid_size=64,
         num_channels=num_channels,
         multiscale_lowres_count=3,
         poisson_noise_factor=-1,
