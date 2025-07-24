@@ -111,29 +111,33 @@ def pick_random_patches_with_content(tar, patch_size):
     final_indices = indices[final_indices,:]
     return final_indices
 
-def full_frame_evaluation(stitched_predictions, tar, inp):
+def full_frame_evaluation(stitched_predictions, tar, inp, same_scale: bool = True):
 
     ncols = tar.shape[-1] + 1
     nrows = 2
     fig, ax = plt.subplots(nrows=nrows, ncols=ncols, figsize=(ncols * 5, nrows * 5))
     ax[0,0].imshow(inp)
-    for i in range(ncols -1):
-        vmin = stitched_predictions[...,i].min()
-        vmax = stitched_predictions[...,i].max()
-        ax[0,i+1].imshow(tar[...,i], vmin=vmin, vmax=vmax)
-        ax[1,i+1].imshow(stitched_predictions[...,i], vmin=vmin, vmax=vmax)
+    for i in range(ncols - 1):
+        if same_scale:
+            vmin = stitched_predictions[...,i].min()
+            vmax = stitched_predictions[...,i].max()
+            ax[0,i+1].imshow(tar[...,i], vmin=vmin, vmax=vmax)
+            ax[1,i+1].imshow(stitched_predictions[...,i], vmin=vmin, vmax=vmax)
+        else:
+            ax[0,i+1].imshow(tar[...,i])
+            ax[1,i+1].imshow(stitched_predictions[...,i])
+
+        ax[0,i+1].set_title(f"Channel {i+1}", fontsize=15)
 
     # disable the axis for ax[1,0]
     ax[1,0].axis('off')
     ax[0,0].set_title("Input", fontsize=15)
-    ax[0,1].set_title("Channel 1", fontsize=15)
-    ax[0,2].set_title("Channel 2", fontsize=15)
     # set y labels on the right for ax[0,2]
-    ax[0,2].yaxis.set_label_position("right")
-    ax[0,2].set_ylabel("Target", fontsize=15)
+    ax[0,ncols-1].yaxis.set_label_position("right")
+    ax[0,ncols-1].set_ylabel("Target", fontsize=15)
 
-    ax[1,2].yaxis.set_label_position("right")
-    ax[1,2].set_ylabel("Predicted", fontsize=15)
+    ax[1,ncols-1].yaxis.set_label_position("right")
+    ax[1,ncols-1].set_ylabel("Predicted", fontsize=15)
 
 
 def find_recent_metrics():
@@ -183,9 +187,10 @@ def show_sampling(dset, model, ax=None):
     idx_list = pick_random_inputs_with_content(dset)
     # inp, S1, S2, diff, mmse, tar
     ncols=6
-    imgsz = 3
+    imgsz=3
+    num_ch = dset._data.shape[-1]
     if ax is None:
-        _,ax = plt.subplots(figsize=(imgsz*ncols, imgsz*2), ncols=ncols, nrows=2)
+        _,ax = plt.subplots(figsize=(imgsz*ncols, imgsz*2), ncols=ncols, nrows=num_ch)
     inp_patch, tar_patch = dset[idx_list[0]]
     ax[0,0].imshow(inp_patch[0])
     ax[0,0].set_title("Input (Idx: {})".format(idx_list[0]))
@@ -200,19 +205,21 @@ def show_sampling(dset, model, ax=None):
             samples.append(pred_patch[0,:tar_patch.shape[0]].cpu().numpy())
     samples = np.array(samples)
 
-    ax[0,1].imshow(samples[0,0]); ax[0,1].set_title("Sample 1")
-    ax[0,2].imshow(samples[1,0]); ax[0,2].set_title("Sample 2")
-    ax[0,3].imshow(samples[0,0] - samples[1,0], cmap='coolwarm'); ax[0,3].set_title("S1 - S2")
-    ax[0,4].imshow(np.mean(samples[:,0], axis=0)); ax[0,4].set_title("MMSE")
-    ax[0,5].imshow(tar_patch[0]); ax[0,5].set_title("Target")
-    # second channel
-    ax[1,1].imshow(samples[0,1])
-    ax[1,2].imshow(samples[1,1])
-    ax[1,3].imshow(samples[0,1] - samples[1,1], cmap='coolwarm')
-    ax[1,4].imshow(np.mean(samples[:,1], axis=0))
-    ax[1,5].imshow(tar_patch[1])
+    ax[0, 1].set_title("Sample 1")
+    ax[0, 2].set_title("Sample 2")
+    ax[0, 3].set_title("S1 - S2")
+    ax[0, 4].set_title("MMSE")
+    ax[0, 5].set_title("Target")
+    for i in range(num_ch):
+        # second channel
+        ax[i, 1].imshow(samples[0, i])
+        ax[i, 2].imshow(samples[1, i])
+        ax[i, 3].imshow(samples[0, i] - samples[1, i], cmap='coolwarm')
+        ax[i, 4].imshow(np.mean(samples[:,i], axis=0))
+        ax[i, 5].imshow(tar_patch[i])
 
-    ax[1,0].axis('off')
+        if i != 0:
+            ax[i, 0].axis('off')
 
 def get_highsnr_data(train_data_config, val_data_config, test_data_config, evaluate_on_validation):
     highsnr_exposure_duration = '500ms'
