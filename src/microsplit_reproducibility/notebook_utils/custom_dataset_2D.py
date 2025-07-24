@@ -23,11 +23,12 @@ def load_pretrained_model(model: VAEModule, ckpt_path):
 
 def get_unnormalized_predictions(
     model: VAEModule, 
-    dset: SplittingDataset, 
-    mmse_count,
-    num_workers=4,
-    grid_size=32,
-    batch_size=8
+    dset: SplittingDataset,
+    data_key: str,
+    mmse_count: int = 10,
+    num_workers: int = 4,
+    grid_size: int = 32,
+    batch_size: int = 8
 ):
     """
     Get the stitched predictions which have been unnormlized.
@@ -52,11 +53,15 @@ def get_unnormalized_predictions(
     # for fname, pred in stitched_predictions.items():
     #     unnorm_stitched_predictions[fname] = pred*std_params['target'].squeeze().reshape(1,1,1,-1) + mean_params['target'].squeeze().reshape(1,1,1,-1)
 
-
+    stitched_predictions = stitched_predictions[data_key]
+    stitched_stds = stitched_stds[data_key]
 
     mean_params, std_params = dset.get_mean_std()
-    unnorm_stitched_predictions = stitched_predictions["data"]*std_params['target'].squeeze().reshape(1,1,1,-1) + mean_params['target'].squeeze().reshape(1,1,1,-1)
-    return unnorm_stitched_predictions, stitched_predictions["data"], stitched_stds["data"]
+    unnorm_stitched_predictions = (
+        stitched_predictions * std_params['target'].squeeze().reshape(1, 1, 1, -1) +
+        mean_params['target'].squeeze().reshape(1, 1, 1, -1)
+    )
+    return unnorm_stitched_predictions, stitched_predictions, stitched_stds
 
 def get_target(dset):
     return dset._data.copy()
