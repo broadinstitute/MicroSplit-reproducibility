@@ -47,10 +47,10 @@ class SplittingParameters(BaseModel):
     lr: float = Field(1e-3, ge=1e-10)
     """The learning rate for training."""
 
-    lr_scheduler_patience: int = Field(30, ge=5)
+    lr_scheduler_patience: int = Field(30, ge=1)
     """The patience for the learning rate scheduler."""
 
-    earlystop_patience: int = Field(200, ge=10)
+    earlystop_patience: int = Field(200, ge=1)
     """The patience for the learning rate scheduler."""
 
     num_epochs: int = Field(400, ge=1)
