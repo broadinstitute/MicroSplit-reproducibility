@@ -1,5 +1,6 @@
 
 from careamics.lvae_training.dataset import DatasetConfig, DataSplitType, DataType
+from typing import Optional
 
 
 def get_data_configs(
@@ -34,6 +35,8 @@ def get_data_configs(
         use_one_mu_std=True,
         train_aug_rotate=True,
         target_separate_normalization=True,
+        uncorrelated_channels=True,
+        uncorrelated_channel_probab=1,
         input_is_sum=False,
         padding_kwargs={"mode": "reflect"},
         overlapping_padding_kwargs={"mode": "reflect"},

@@ -20,7 +20,6 @@ def load_pretrained_model(model: VAEModule, ckpt_path):
     model.load_state_dict(ckpt_dict['state_dict'], strict=False)
     print(f"Loaded model from {ckpt_path}")
 
-
 def get_unnormalized_predictions(
     model: VAEModule, 
     dset: SplittingDataset,
