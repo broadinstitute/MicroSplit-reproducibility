@@ -114,7 +114,7 @@ def get_training_config(**kwargs) -> TrainingConfig:
         num_epochs=kwargs["num_epochs"],
         precision="16-mixed",
         logger="wandb",
-        gradient_clip_algorithm="norm",
+        gradient_clip_algorithm="value",
         grad_clip_norm_value=0,
         lr=kwargs["lr"],
         lr_scheduler_patience=kwargs["lr_scheduler_patience"],
