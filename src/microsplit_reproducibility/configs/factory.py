@@ -145,7 +145,7 @@ def get_optimizer_config(**kwargs) -> OptimizerModel:
 
 # TODO: Some of these are typed as optional but VAEBasedAlgorithm does not agree...
 def create_algorithm_config(
-    algorithm: Literal["muspit", "denoisplit"],
+    algorithm: Literal["musplit", "denoisplit"],
     model_config: LVAEModel,
     loss_config: Optional[LVAELossConfig] = None,
     gaussian_lik_config: Optional[GaussianLikelihoodConfig] = None,
