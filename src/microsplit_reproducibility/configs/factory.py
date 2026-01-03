@@ -34,6 +34,7 @@ def get_model_config(**kwargs) -> LVAEModel:
     )
     
 
+# set the likelihood configurations - nm required for denoisesoplit and denoisesplit_musplit but not for musplit
 def get_likelihood_config(
     **kwargs,
 ) -> tuple[GaussianLikelihoodConfig, MultiChannelNMConfig, NMLikelihoodConfig]:
@@ -115,7 +116,7 @@ def get_training_config(**kwargs) -> TrainingConfig:
         precision="16-mixed",
         logger="wandb",
         gradient_clip_algorithm="value",
-        grad_clip_norm_value=0,
+        grad_clip_norm_value=0.5,
         lr=kwargs["lr"],
         lr_scheduler_patience=kwargs["lr_scheduler_patience"],
     )
@@ -145,7 +146,7 @@ def get_optimizer_config(**kwargs) -> OptimizerModel:
 
 # TODO: Some of these are typed as optional but VAEBasedAlgorithm does not agree...
 def create_algorithm_config(
-    algorithm: Literal["musplit", "denoisplit"],
+    algorithm: Literal["muspit"], #"denoisplit" (leaving out denoisplit for now)
     model_config: LVAEModel,
     loss_config: Optional[LVAELossConfig] = None,
     gaussian_lik_config: Optional[GaussianLikelihoodConfig] = None,
@@ -158,7 +159,7 @@ def create_algorithm_config(
     
     Parameters
     ----------
-    algorithm : Literal["muspit", "denoisplit"]
+    algorithm : Literal["muspit"] #"denoisplit" (leaving out denoisplit for now)
         The algorithm type.
     model_config : LVAEModel
         The LVAE model configuration.
