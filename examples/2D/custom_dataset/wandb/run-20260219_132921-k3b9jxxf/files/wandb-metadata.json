@@ -1,0 +1,37 @@
+{
+  "os":  "macOS-26.3-arm64-arm-64bit",
+  "python":  "CPython 3.11.13",
+  "startedAt":  "2026-02-19T18:29:21.613503Z",
+  "program":  "/Users/sdasgupt/Documents/microsplit/microsplit/MicroSplit-reproducibility/examples/2D/custom_dataset/01_train.ipynb",
+  "codePath":  "examples/2D/custom_dataset/01_train.ipynb",
+  "codePathLocal":  "01_train.ipynb",
+  "git":  {
+    "remote":  "https://github.com/broadinstitute/MicroSplit-reproducibility.git",
+    "commit":  "43e3100392b3dd129ea40c437ddbd45531947abb"
+  },
+  "email":  "sdasgupt@broadinstitute.org",
+  "root":  ".",
+  "host":  "wm991-b24",
+  "executable":  "/Users/sdasgupt/anaconda3/envs/microsplit/bin/python",
+  "cpu_count":  10,
+  "cpu_count_logical":  10,
+  "disk":  {
+    "/":  {
+      "total":  "494384795648",
+      "used":  "468857008128"
+    }
+  },
+  "memory":  {
+    "total":  "17179869184"
+  },
+  "apple":  {
+    "name":  "Apple M2 Pro",
+    "ecpuCores":  4,
+    "pcpuCores":  6,
+    "gpuCores":  16,
+    "memoryGb":  16,
+    "swapTotalBytes":  "13958643712",
+    "ramTotalBytes":  "17179869184"
+  },
+  "writerId":  "y4dxv19ylawq9879kxq7c7kr5lzzztej"
+}
