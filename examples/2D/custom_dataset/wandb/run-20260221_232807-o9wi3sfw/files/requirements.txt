@@ -181,7 +181,7 @@ sympy==1.13.1
 jupyter-lsp==2.3.0
 PyYAML==6.0.2
 httpx==0.28.1
-filelock==3.20.0
+filelock==3.20.3
 donfig==0.8.1.post1
 matplotlib-inline==0.1.7
 smmap==5.0.2
