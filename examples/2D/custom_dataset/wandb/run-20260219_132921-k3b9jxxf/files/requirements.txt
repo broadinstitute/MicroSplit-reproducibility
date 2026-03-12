@@ -101,7 +101,7 @@ jupyterlab_widgets==3.0.15
 czifile==2019.7.2.1
 stack-data==0.6.3
 imagecodecs==2024.9.22
-tornado==6.5.2
+tornado==6.5.5
 PyJWT==2.10.1
 jsonschema==4.25.1
 markdown-it-py==4.0.0
