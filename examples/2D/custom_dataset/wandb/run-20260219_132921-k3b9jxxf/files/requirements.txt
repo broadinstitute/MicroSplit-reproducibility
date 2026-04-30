@@ -110,7 +110,7 @@ referencing==0.36.2
 jmespath==1.0.1
 wrapt==1.17.3
 platformdirs==4.5.0
-notebook==7.4.7
+notebook==7.5.6
 loguru==0.7.3
 bioimageio.spec==0.5.3.5
 Send2Trash==1.8.3
