@@ -1,0 +1,29 @@
+{
+  "os":  "macOS-26.5-arm64-arm-64bit",
+  "python":  "CPython 3.11.13",
+  "startedAt":  "2026-05-19T14:17:00.007774Z",
+  "program":  "/Users/sdasgupt/Documents/microsplit/microsplit/MicroSplit-reproducibility/examples/2D/custom_dataset/01_train.py",
+  "codePath":  "examples/2D/custom_dataset/01_train.py",
+  "codePathLocal":  "examples/2D/custom_dataset/01_train.py",
+  "git":  {
+    "remote":  "https://github.com/broadinstitute/MicroSplit-reproducibility.git",
+    "commit":  "be8277ee68aaf91c565d52f1b1077a3304999f2b"
+  },
+  "email":  "sdasgupt@broadinstitute.org",
+  "root":  ".",
+  "host":  "wm991-b24",
+  "executable":  "/Users/sdasgupt/anaconda3/envs/microsplit/bin/python",
+  "cpu_count":  10,
+  "cpu_count_logical":  10,
+  "disk":  {
+    "/":  {
+      "total":  "494384795648",
+      "used":  "456478543872"
+    }
+  },
+  "memory":  {
+    "total":  "17179869184"
+  },
+  "apple":  {},
+  "writerId":  "sgdsjroubwu07628fi7ghfbs6n8nyp84"
+}
