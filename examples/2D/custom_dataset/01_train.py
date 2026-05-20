@@ -1,29 +1,7 @@
-# %% [markdown]
-# # Introduction - what does this notebook do?
 
-# %% [markdown]
-# Below, we will train a <nobr>Micro$\mathbb{S}$plit</nobr> network for unmixing two superimposed channels for a custom dataset you provide. 
+#   This code trains a Microsplit network for unmixing two superimposed channels
 
-# %% [markdown]
-# <div class="alert alert-block alert-info">
-# <b>Important:</b> How to organize your data for training a <nobr>Micro$\mathbb{S}$plit</nobr> model
-# </div>
-
-# %% [markdown]
-# <div class="alert alert-block alert-info">
-# <b>Note:</b> We provide example data for this set of notebooks also, but the intention is to let a user use their own data.
-# </div>
-
-# %% [markdown]
-# Below, we will train a <nobr>Micro$\mathbb{S}$plit</nobr> network for unmixing two or more superimposed channels for a custom 2D dataset you provide. 
-# 
-# You should organize you dataset as follows:
-# - Create a `data` directory
-# - Create subdirectories `channel_1`, `channel_2`, etc, containing the channels you would like to unmix
-# - Make sure that the images have the same spatial size and each image has only 1 channel
-# 
-# Your data directory should look like this:
-# ```
+# The data directory should be structured as follows:
 # you_data_path/
 # └── data
 #     ├── channel_1
@@ -38,32 +16,13 @@
 #     │   ├── image1.tiff
 #     │   ├── image2.tiff
 #     │   └── image3.tiff
-# ```
 # 
 # The mixed image used for splitting will be obtained artificially by a convex combination of the target channels.
-# 
-# Let's begin!
-
-# %% [markdown]
-# ## Background: what is <nobr>Micro$\mathbb{S}$plit</nobr> training all about?
-# Training is done in a supervised way. For every input patch, we have the two corresponding target patches using which we train our MicroSplit. 
-# Besides the primary input patch, we also feed LC inputs to MicroSplit. We introduced LC inputs in [μSplit: efficient image decomposition for microscopy data](https://openaccess.thecvf.com/content/ICCV2023/papers/Ashesh_uSplit_Image_Decomposition_for_Fluorescence_Microscopy_ICCV_2023_paper.pdf), which enabled the network to understand the global spatial context around the input patch.
-# 
-# To enable unsupervised denoising, we integrated the KL loss formulation and Noise models from our previous work [denoiSplit: a method for joint microscopy image splitting and unsupervised denoising](https://eccv.ecva.net/virtual/2024/poster/2538). 
-# 
 # The loss function for MicroSplit is a weighted average of denoiSplit loss and μSplit loss. For both denoiSplit and μSplit, their loss expression have two terms: KL divergence loss and likelihood loss. For more details, please refer to the respective papers.
 
-# %% [markdown]
-# # Let's do it, let's train a <nobr>Micro$\mathbb{S}$plit</nobr> Model!
-
-# %% [markdown]
-# **You are new to Jupyter notebooks?** Don't worry, if you take the time to read all our explanations, we will guide you through them and you will understand a lot. Still, you will likely end up less frustrated, if you do not even start with the ambition to interpret the purpose of every line of code.
-# Let's start with a nice example, the imports to enable the remainder of this notebook. Ignore it (unless you know what you are doing) and just click **⇧*Shift* + ⏎*Enter*** to execute this (and all other) code cells. 
-
-# %%
-# importing all the things we need further down
+# import packages and modules
 import torch
-# import neptune
+# import neptune (if using neptune for logging)
 import numpy as np
 import platform
 from pathlib import Path
@@ -99,52 +58,18 @@ from microsplit_reproducibility.configs.parameters.custom_dataset_2D import (
 from microsplit_reproducibility.configs.data.custom_dataset_2D import get_data_configs
 from microsplit_reproducibility.datasets.custom_dataset_2D import get_train_val_data
 
-# %% [markdown]
-# # **Step 1.1:** Data Preparation
-
-# %% [markdown]
-# Since the channel unmixing capabilities of <nobr>Micro$\mathbb{S}$plit</nobr> are trained in a supervised way, we must later feed *(i)* input images that contain both selected structures, and *(ii)* two seperate channels that show these two structures separately. As previosuly mentioned, the mixed input image is obtained synthetically by overlapping the other two channels.
-
-# %% [markdown]
-# ### Load example data
-
-# %%
-# DATA = pooch.create(
-#     path=f"./data/",
-#     base_url=f"https://download.fht.org/jug/msplit/ht_lif24/data_tiff/",
-#     registry={f"ht_lif24_5ms_reduced.zip": None},
-# )
-# for fname in DATA.registry:c
-#     DATA.fetch(fname, processor=pooch.Unzip(), progressbar=True)
-
-# DATA_PATH = DATA.abspath / (DATA.registry_files[0] + ".unzip/5ms/data/")
-
-# %% [markdown]
-# ### OR set the path to your own data
+# Set the path to your own data
 # Important: the path should end with `data/`
 
-# %%
 DATA_PATH = Path("/Users/sdasgupt/Documents/microsplit/jump-qc/Yokogawa_images/good_images_train_100images/data")
 
-# %% [markdown]
-# ### Setup the path to the noise models
+
+# Setup the path to the noise models
 # This is the path to the noise models that you trained in the notebook **00_noisemodels.ipynb**
+# Not used because we are running musplit, which does not use noise models
+# NM_PATH = Path("./noise_models/") 
 
-# %%
-NM_PATH = Path("./noise_models/")
-
-# %% [markdown]
-# ### Next, we load the image data to be processed
-# 
-# ***Note*** that depending on the amount of GPU memory you have available, you might want to adjust the batch size. The default is 32, but you can reduce it to 16 if you run out of memory by changing the <i> batch_size </i> parameter in <i> get_microsplit_parameters </i> below.
-# 
-# Number of epochs is set to 10, which usually allows to see decent results. However, for getting optimal performance you can increase it to 50.
-# 
-# You also need to change the `num_channels` and `target_channels` parameters respectively for the `get_data_configs()` and the `get_microsplit_parameters` functions. These parameters have a similar meaning, i.e., they control the number of channels in the input data depending on how many channels you want to split.
-# 
-# Finally, ensure that the `image_size` parameter (i.e., the patch size in (`Z`, `Y`, `X`) you want to use to train the model) is properly set given the size of your data and of you GPU.
-
-# %%
+# Change this based on your dataset
 NUM_CHANNELS = 2
 """The number of channels considered for the splitting task."""
 BATCH_SIZE = 8 # reduced batch size for wandb testing
@@ -156,8 +81,7 @@ EPOCHS = 5 # reduced number of epochs for wandb testing
 
 assert len(PATCH_SIZE) == 2, "PATCH_SIZE must be a tuple of length 2 (Y, X) since we are using 2D data."
 
-# %%
-# setting up train, validation, and test data configs
+# Setting up train, validation, and test data configs
 train_data_config, val_data_config, test_data_config = get_data_configs(
     image_size=PATCH_SIZE,
     num_channels=NUM_CHANNELS
