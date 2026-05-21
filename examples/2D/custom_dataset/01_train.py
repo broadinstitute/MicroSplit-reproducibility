@@ -107,11 +107,10 @@ train_dset, val_dset, _, data_stats = create_train_val_datasets(
     load_data_func=get_train_val_data,
 )
 
-# %% [markdown]
-# ### Configure `num_workers`
+# Configure `num_workers`
 # In Windows and MacOS, setting `num_workers > 0` for dataloaders would cause out-of-memory issue and might crash the system.
 
-# %%
+
 def get_num_workers():
     """Utility function to set num_workers based on OS."""
     if platform.system() == "Windows" or platform.system() == "Darwin":
@@ -121,10 +120,9 @@ def get_num_workers():
 
 experiment_params["num_workers"] = get_num_workers()
 
-# %% [markdown]
-# ***Optional:*** inspect data configurations and <nobr>Micro$\mathbb{S}$plit</nobr> config
 
-# %%
+# Optional: inspect data configurations and microsplit/musplit config
+
 do_show_configs = True
 
 if do_show_configs:
@@ -139,10 +137,8 @@ if do_show_configs:
 else:
     print("You opted out of having all params printed... swiftly moving on... ;)")
 
-# %% [markdown]
-# ### Final step: create Dataloaders for network training
+# Final step: create Dataloaders for network training
 
-# %%
 train_dloader = DataLoader(
     train_dset,
     batch_size=experiment_params["batch_size"],
@@ -156,12 +152,7 @@ val_dloader = DataLoader(
     shuffle=False,
 )
 
-# %% [markdown]
-# # **Step 1.2:** Prepare <nobr>Micro$\mathbb{S}$plit</nobr> Training
-# Next, we create all the configs for the upcoming network training run. These lines are not very intuitive and if you don't intend to dive really deep into CAREamics and the internals of <nobr>Micro$\mathbb{S}$plit</nobr>, you might just execute these cells and move on.
-
-# %%
-# making our data_stas known to the experiment we prepare
+# Prepare training
 experiment_params["data_stats"] = data_stats
 
 # setting up training losses and model config (using default parameters)
@@ -176,7 +167,7 @@ training_config = get_training_config(**experiment_params)
 lr_scheduler_config = get_lr_scheduler_config(**experiment_params)
 optimizer_config = get_optimizer_config(**experiment_params)
 
-# finally, assemble the full set of experiment configurations...
+# assemble the full set of experiment configurations
 experiment_config = create_algorithm_config(
     algorithm=experiment_params["algorithm"],
     loss_config=loss_config,
@@ -188,61 +179,34 @@ experiment_config = create_algorithm_config(
     optimizer_config=optimizer_config,
 )
 
-# %% [markdown]
-# ## Initialize the <nobr>Micro$\mathbb{S}$plit</nobr> model to be trained..
-
-# %%
+# Initialize the model to be trained
 model = VAEModule(algorithm_config=experiment_config)
 
-# %% [markdown]
-# ### *Load checkpoint (optional and for you to implement)*
-# 
-# <div class="alert alert-block alert-success">
-# <b>Note:</b> If you would like to continue a previous training run or finetune a compatible pre-trained model, here would be a good place. You will need to figure out how to implement this for your use-case, but to give you a head-start, we left three potentially useful lines of code below.
-# </div>
+# Load checkpoint (optional)
 
-# %%
 # from microsplit_reproducibility.notebook_utils.HT_LIF24 import load_pretrained_model
 # ckpt_path = load_checkpoint_path(f"./pretrained_checkpoints/{EXPOSURE_DURATION}/", best=True)
 # load_pretrained_model(model, ckpt_path)
 
-# %% [markdown]
+
 # ## Show some training data for a final check!
-# ***Tip:*** we show you a few samples of the prepared training data. In case you don't like what you see, execute the cell again and other randomly chosen patches will be shown!
+# These are a few samples of the prepared training data. 
 
-# %%
 plot_input_patches(dataset=train_dset, num_channels=NUM_CHANNELS, num_samples=3, patch_size=128)
+# allow logging some training patches in wandb
 
-# %% [markdown]
-# # **Step 1.3:** Train the prepared model!
-# ***Note:*** if this takes too long, there were to places above where we gave you options to *(i)* reduce the amount of training data, and *(ii)* chose to train for fewer epochs. Revisit your choices if you want to!
-# 
-# ***Note:*** Depending on the amount of GPU memory you have available, you might want to adjust the batch size. The default is 32, but you can reduce it to 16 if you run out of memory by changing the <i> batch_size </i> parameter in <i> get_microsplit_parameters </i> above.
-# 
+# Train the prepared model!
 
-# %%
-# This code block was for generating the metrics.csv file, which we are not using anymore because we log to Neptune
-# from pytorch_lightning.loggers import CSVLogger
-# from pytorch_lightning import Trainer
-
-# logger = CSVLogger(save_dir="lightning_logs", name=None)
-# trainer = Trainer(logger=logger)
-
-# %%
-# print(experiment_params.keys())
-
-# %%
 wandb.login()
 
-# %%
 # create a CAREamics 'Trainer'
 
 wandb_logger = WandbLogger(
     project="jump-qc-microsplit",     
     entity="CiminiLab",    
     job_type="train",
-    name="JUMP_QC_WANDB3",                
-    tags=["musplit", "epochs=2", "images=100_per_channel", "batch_size=8"],
+    name="JUMP_QC_WANDB3",     # change for newer runs           
+    tags=["musplit", "epochs=2", "images=100_per_channel", "batch_size=8"], # change batch size and epochs in the tags for better tracking
     save_dir=".",                    
     log_model=True,
     save_code=True,                   
@@ -261,7 +225,7 @@ trainer = Trainer(
     logger=wandb_logger,
     )
 
-# start the training - yay!
+# start the training
 trainer.fit(
     model=model,
     train_dataloaders=train_dloader,
@@ -272,23 +236,13 @@ trainer.fit(
 run = wandb_logger.experiment
 run.log_code(root="/Users/sdasgupt/Documents/microsplit/microsplit/MicroSplit-reproducibility")
 
-# %%
-# from pandas import read_csv
-# from microsplit_reproducibility.notebook_utils.custom_dataset_2D import find_recent_metrics, plot_metrics
-# df = read_csv(find_recent_metrics())
-# plot_metrics(df)
 
-# %% [markdown]
-# # **Step 1.4:** Predict and visualize results for validation data...
-
-# %%
 # Optional, reduce the validation dataset to speed up the evaluation
 val_dset.reduce_data([0])
 
-# %% [markdown]
-# ***Note*** Parameter `mmse_count` is responsible for how many samples are generated for each patch. The default value is 1, but in this case you might see stitching artifacts because each patch will be slightly different. You can increase this value to 10 to get a smoother image
+# Note: Parameter `mmse_count` is responsible for how many samples are generated for each patch. 
+# The default value is 1, but in this case you might see stitching artifacts because each patch will be slightly different. You can increase this value to 10 to get a smoother image
 
-# %%
 from microsplit_reproducibility.notebook_utils.custom_dataset_2D import (
     get_unnormalized_predictions,
     get_target,
