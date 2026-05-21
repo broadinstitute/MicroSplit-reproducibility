@@ -21,7 +21,7 @@ import pooch
 from careamics.lightning import VAEModule
 from microsplit_reproducibility.notebook_utils.custom_dataset_2D import get_target
 from microsplit_reproducibility.notebook_utils.custom_dataset_2D import full_frame_evaluation
-
+from microsplit_reproducibility.notebook_utils.HT_LIF24 import show_sampling
 
 from microsplit_reproducibility.configs.factory import (
     create_algorithm_config,
@@ -681,19 +681,7 @@ ax[1, 2].set_ylabel("Predicted")
 
 print("Here the crop you selected:")
 
-# %% [markdown]
-# # ***Optional Step 2.5:*** Posterior Sampling and MMSE Predictions
-# For a given input patch, <nobr>Micro$\mathbb{S}$plit</nobr> can generate multiple outputs. This is possible because <nobr>Micro$\mathbb{S}$plit</nobr> is learning a full posterior of possible solutions, which is a quite powerful feature!
-# 
-# As we elaborate in the <nobr>Micro$\mathbb{S}$plit</nobr> paper and also later in the calibration notebook `03_calibration.ipynb`, this allows users to visually judge and even quantify the (data) uncertainty in the predictions their trained model makes.
-# 
-# Below, we show two posterior samples and how much they differ for a few random foreground locations. Re-run the cell to see different randomly choosen locations and corresponding posterior samples.
-
-# %% [markdown]
-# ### Get two posterior samples and plot them...
-
-# %%
-from microsplit_reproducibility.notebook_utils.HT_LIF24 import show_sampling
+# Optional Step 2.5: Posterior Sampling and MMSE Predictions
 
 imgsz = 3
 ncols = 6
@@ -709,26 +697,6 @@ show_sampling(dset, model, ax=ax[2:4])
 show_sampling(dset, model, ax=ax[4:6])
 plt.tight_layout()
 
-# %% [markdown]
-# ### The MMSE solution and why you should care...
-# You might have spotted a few tiling artifacts here and there in the plots above. This is mainly caused by the fact that we are using a variational model that predicts samples from the learned posterior.
-# 
-# Without going into all the details, at tile-edges, the posterior samples are simply not 100% consistent (because the input is subject to uncertainties due to non-perfect inputs).
-# 
-# Either way, without even telling you, the predictions you computed above are not single samples as the ones we saw in the previous plot. Instead, we have created multiple posterior samples and averaged them pixel by pixel.
-# 
-# ***But why would we do that?*** While a single posterior sample is one interpretation of the noisy and likely somewhat ambiguous input data, the Minimum Mean Square Error (MMSE) of the posterior is the expected value of the posterior. Imagine it as the average of all posterior samples!
-# 
-# Fun fact, if you train a U-Net with an L2 loss, the U-Net's predictions will also be an approximation of the MMSE. 👀
-# 
-# Anyway, the details can be confusing... the take-home message is:
-# **The more posterior samples you average, the closer will this average image be at the MMSE solution. MMSE solutions look nice and smooth, and they are relatively consistent when we compute tiled predictions.
-# 
-# All this is certainly not obvious and if you are interested to learn more, maybe check out [this](https://arxiv.org/abs/2401.01438) and [this](https://openaccess.thecvf.com/content/ICCV2023/papers/Ashesh_uSplit_Image_Decomposition_for_Fluorescence_Microscopy_ICCV_2023_paper.pdf)!
-# 
-# But enough -- **let's compare single posterior samples with some approximate MMSE solutions**!
-
-# %%
 n_samples = 50  # min: 10
 if n_samples < 10:
     n_samples = 10
@@ -744,7 +712,6 @@ inp_patch, tar_patch = dset[idx_list[0] + 1]
 # compute individual posterior samples
 samples = []
 model.eval()
-import torch
 
 for _ in (range(n_samples), "Sampling the posterior"):
     with torch.no_grad():
@@ -752,7 +719,6 @@ for _ in (range(n_samples), "Sampling the posterior"):
         samples.append(pred_patch[0, : tar_patch.shape[0]].cpu().numpy())
 samples = np.array(samples)
 
-# %%
 inp_patch, tar_patch = dset[idx_list[0]]
 
 nrows = 5
@@ -783,8 +749,7 @@ ax[4, 1].set_title("C2: Target")
 
 ax[0, 1].axis("off")
 
-# %% [markdown]
-# # **Step 2.6:** Saving data required for network calibration and error estimations (ie. for running `03_calibration.ipynb`)
+# Step 2.6: Saving data required for network calibration and error estimations (ie. for running `03_calibration.ipynb`)
 # We reached a point where we can train and use <nobr>Micro$\mathbb{S}$plit</nobr>. Only one key feature remains unexplored: the possibility to check how well calibrated a trained <nobr>Micro$\mathbb{S}$plit</nobr> network is, and then use multiple posterior samples to analyze their pixel-wise variability to ***estimate the true error*** with respect to unknown ground truth.
 # 
 # **Calibaration and error estimation will require:**<br>
