@@ -15,10 +15,12 @@ import tifffile as tiff
 import torch
 from pathlib import Path
 import gc
+import matplotlib.pyplot as plt
 
 import pooch
 from careamics.lightning import VAEModule
 from microsplit_reproducibility.notebook_utils.custom_dataset_2D import get_target
+from microsplit_reproducibility.notebook_utils.custom_dataset_2D import full_frame_evaluation
 
 
 from microsplit_reproducibility.configs.factory import (
@@ -583,30 +585,21 @@ for i in range(T):
 inp = get_input(dset).sum(-1)
 tar = get_target(dset)
 
-# %% [markdown]
-# ## Overview: visualize full <nobr>Micro$\mathbb{S}$plit</nobr> predictions...
+# Overview: visualize full microsplit predictions
 
-# %%
-from microsplit_reproducibility.notebook_utils.custom_dataset_2D import full_frame_evaluation
 
 frame_idx = 0
 assert frame_idx < len(stitched_predictions), f"Frame index {frame_idx} out of bounds"
 
 full_frame_evaluation(stitched_predictions[frame_idx], tar[frame_idx], inp[frame_idx])
 
-# %% [markdown]
-# ## Detailed view on some (foreground) locations...
-# Below, we show few random foreground locations and the corresponding <nobr>Micro$\mathbb{S}$plit</nobr> predictions.
-# 
-# You can execute the cell multiple times and different randomly chosen locations will be plotted.
+# Detailed view on some (foreground) locations...
+# Below, we show few random foreground locations and the corresponding microsplit predictions.
 
-# %%
-import numpy as np
 from microsplit_reproducibility.utils.utils import clean_ax
 from microsplit_reproducibility.notebook_utils.HT_LIF24 import (
     pick_random_patches_with_content,
 )
-import matplotlib.pyplot as plt
 
 img_sz = 128
 rand_locations = pick_random_patches_with_content(tar, 128)
@@ -648,14 +641,7 @@ for i in range(2):  # 2 channel splitting
 plt.subplots_adjust(wspace=0.03, hspace=0.03)
 clean_ax(ax)
 
-# %% [markdown]
-# ## *Optional:* manual inspection of the predictions
-# <div class="alert alert-block alert-info">
-# <b> Task:</b> Set <i>y_start</i>, <i>x_start</i>, and <i>crop_size</i> to inspect the predictions at a  location of your choice.
-# </div>
-
-# %%
-import numpy as np
+# *Optional:* manual inspection of the predictions
 
 y_start = 750  # np.random.randint(stitched_predictions.shape[1] - crop_size)
 x_start = 750  # np.random.randint(stitched_predictions.shape[2] - crop_size)
