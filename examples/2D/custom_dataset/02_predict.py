@@ -750,16 +750,6 @@ ax[4, 1].set_title("C2: Target")
 ax[0, 1].axis("off")
 
 # Step 2.6: Saving data required for network calibration and error estimations (ie. for running `03_calibration.ipynb`)
-# We reached a point where we can train and use <nobr>Micro$\mathbb{S}$plit</nobr>. Only one key feature remains unexplored: the possibility to check how well calibrated a trained <nobr>Micro$\mathbb{S}$plit</nobr> network is, and then use multiple posterior samples to analyze their pixel-wise variability to ***estimate the true error*** with respect to unknown ground truth.
-# 
-# **Calibaration and error estimation will require:**<br>
-# ***(i)*** target images as the one we used during training but for the *Test and Validation data* (we will store those in two files for later use),<br>
-# ***(ii)*** saved MMSE predictions obtained with your trained model *on the Test and the Validation data* (also here we will store 2 files), and <br>
-# ***(iii)*** saved pixel-wise standard deviations (Std) of the posterior samples we averaged to get the MMSE predictions from above (also on *Test and Validation data*, hence, yet another 2 files to be saved).
-# 
-# Once we created and saved all we need, the notebook `03_calibration.ipynb` does not have to deal with <nobr>Micro$\mathbb{S}$plit</nobr> models or predictions at all! 🥳
-
-# %%
 # change this only if you used your own data
 dataset_prefix = "user_annotated_blurry_images_"  # TODO: fill in with your own dataset prefix
 
@@ -767,11 +757,8 @@ dataset_prefix = "user_annotated_blurry_images_"  # TODO: fill in with your own 
 path_for_calibration_data = f"calibration_data"
 os.makedirs(path_for_calibration_data, exist_ok=True)
 
-# %% [markdown]
-# ### ***Step 2.6.1:*** Save target data we need in the calibration notebook.
-# We need the training-data like target channels later in the calibration notebook, and since we have this data availabe right here, let's quickly save it into the folder we created above (the one that will contain the 6 files we talk about all the time).
+# Step 2.6.1: Save target data we need in the calibration notebook.
 
-# %%
 data_stats = experiment_params["data_stats"]
 target_val = val_dset._data[...]
 target_test = test_dset._data[...]
@@ -798,8 +785,7 @@ print(
     f'✅ Saved target data for Test data at "{path_for_calibration_data}/{target_test_filename}.tif"!'
 )
 
-# %% [markdown]
-# ### ***Step 2.6.2:*** Save the MMSE predictions and Std from Step 2.4.
+# Step 2.6.2: Save the MMSE predictions and Std from Step 2.4.
 # We need four more things to have all the data for the calibration notebook together. More specifically, and as mentioned before, we need:
 # *(i)* the MMSE predictions for the Validation data, 
 # *(ii)* the MMSE predictions for the Test data,
@@ -809,8 +795,7 @@ print(
 # Two of these four missing pieces we have computed above, depending on what you choose to work with, Validation or Training data (you made this choice in Step 2.1).
 # If you want to be prepared for the next notebook and haven't already, go back to Step 2.1, and set <i> evaluate_on_validation_data = True </i> and re-run the cells in the remainer of the notebook. Make sure `reduce_data` parameter setting is consistent. 
 
-# %%
-# Let us make somewhat sure that this notebook is not in 'bad shape'
+# Let us make sure:
 # (i) are the generated predictions of same shape?
 
 assert (
@@ -833,15 +818,9 @@ print(
 )
 the_other = "Test" if evaluate_on_validation_data else "Val"
 
-# %%
-# print("evaluate_on_validation_data:", evaluate_on_validation_data)
-# print("pred/std:", norm_stitched_predictions.shape, stitched_stds.shape)
-# print("val target:", val_dset._data.shape)
-# print("test target:", test_dset._data.shape)
 
 
-# %%
-# store the predictions currently available in this notebook (created in Step 2.4 (predictions))
+# store the predictions currently available (created in Step 2.4 (predictions))
 pred_filename = "prediction_" + dataset_prefix + val_or_test
 std_filename = "std_" + dataset_prefix + val_or_test
 # save only one prediction
@@ -863,12 +842,5 @@ print(
     f'You are only ready for the calibration notebook once the folder "{path_for_calibration_data}" contain 6 files in total!'
 )
 
-# %% [markdown]
-# **If 6 files (dataset name will differ) like the ones show below are in the above mentioned folder you are done here! 👍**
-# ![calibration_data_files.png](attachment:3c77e4c3-4247-4c65-b35b-39591ec0c95f.png)
-# ### Congratulations, done, that is fantastic! 🎉
-
-# %% [markdown]
-# 
 
 
