@@ -52,7 +52,7 @@ DATA_PATH = Path("/Users/sdasgupt/Documents/microsplit/jump-qc/Yokogawa_images/b
 
 # %% [markdown]
 # Setup the path to the noise models
-# NM_PATH = Path("./noise_models/")
+NM_PATH = Path("./noise_models/")
 
 # Load the image data to be processed
 
