@@ -49,15 +49,10 @@ from microsplit_reproducibility.datasets.custom_dataset_2D import get_train_val_
 
 DATA_PATH = Path("/Users/sdasgupt/Documents/microsplit/jump-qc/Yokogawa_images/bad_images/blurry_images/data")
 
-
-# %% [markdown]
 # Setup the path to the noise models
 NM_PATH = Path("./noise_models/")
 
 # Load the image data to be processed
-
-from pathlib import Path
-import tifffile
 
 root = Path(DATA_PATH)
 
@@ -66,12 +61,13 @@ for p in root.rglob("*"):
     if p.is_file():
         # mimic the loader's behavior (but add filters if you want)
         try:
-            tifffile.imread(p)
+            tiff.imread(p)
         except Exception as e:
             bad.append((str(p), repr(e)))
 
 bad[:20], len(bad)
 
+# Print results from above step and insert a cleanup step for .DS_Store files
 
 # running the next code blocks instead of this one because dataset comprises only two images
 # setting up train, validation, and test data configs
@@ -264,7 +260,7 @@ experiment_params["num_workers"] = get_num_workers()
 
 # Pick Validation or Test data to be used
 
-evaluate_on_validation_data = False  # set to True to use validation data instead of test data
+evaluate_on_validation_data = True  # set to True to use validation data instead of test data
 if evaluate_on_validation_data:
     print("Will use validation data", end="")
     dset = val_dset
@@ -772,13 +768,13 @@ target_test_normalized = (target_test - sep_mean) / sep_std
 # store also the corresponding target data (this is just like the supervision data we used during training)
 target_val_filename = "target_" + dataset_prefix + "Val"
 target_test_filename = "target_" + dataset_prefix + "Test"
-tifffile.imwrite(
+tiff.imwrite(
     f"{path_for_calibration_data}/{target_val_filename}.tif", target_val_normalized
 )
 print(
     f'✅ Saved target data for Val data at "{path_for_calibration_data}/{target_val_filename}.tif"!'
 )
-tifffile.imwrite(
+tiff.imwrite(
     f"{path_for_calibration_data}/{target_test_filename}.tif", target_test_normalized
 )
 print(
@@ -824,13 +820,13 @@ the_other = "Test" if evaluate_on_validation_data else "Val"
 pred_filename = "prediction_" + dataset_prefix + val_or_test
 std_filename = "std_" + dataset_prefix + val_or_test
 # save only one prediction
-tifffile.imwrite(
+tiff.imwrite(
     f"{path_for_calibration_data}/{pred_filename}.tif", norm_stitched_predictions
 )
 print(
     f'✅ Saved MMSE predictions for {val_or_test} data at "{path_for_calibration_data}/{pred_filename}.tif"!'
 )
-tifffile.imwrite(f"{path_for_calibration_data}/{std_filename}.tif", stitched_stds)
+tiff.imwrite(f"{path_for_calibration_data}/{std_filename}.tif", stitched_stds)
 print(
     f'✅ Saved posterior sample Stds for {val_or_test} data at "{path_for_calibration_data}/{pred_filename}.tif"!'
 )
