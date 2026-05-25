@@ -1,0 +1,54 @@
+diff --git a/examples/2D/custom_dataset/01_train.py b/examples/2D/custom_dataset/01_train.py
+index d92b1aa..a9dc697 100644
+--- a/examples/2D/custom_dataset/01_train.py
++++ b/examples/2D/custom_dataset/01_train.py
+@@ -67,16 +67,16 @@ DATA_PATH = Path("/Users/sdasgupt/Documents/microsplit/jump-qc/Yokogawa_images/g
+ # Setup the path to the noise models
+ # This is the path to the noise models that you trained in the notebook **00_noisemodels.ipynb**
+ # Not used because we are running musplit, which does not use noise models
+-# NM_PATH = Path("./noise_models/") 
++NM_PATH = Path("./noise_models/") 
+ 
+ # Change this based on your dataset
+ NUM_CHANNELS = 2
+ """The number of channels considered for the splitting task."""
+-BATCH_SIZE = 8 # reduced batch size for wandb testing
++BATCH_SIZE = 16 # increased batch size to 16
+ """The batch size for training."""
+ PATCH_SIZE = (64, 64)
+ """The size of the patches fed to the network for training in (Y, X)."""
+-EPOCHS = 5 # reduced number of epochs for wandb testing
++EPOCHS = 50 # increased epochs to 50
+ """The number of epochs to train the network."""
+ 
+ assert len(PATCH_SIZE) == 2, "PATCH_SIZE must be a tuple of length 2 (Y, X) since we are using 2D data."
+@@ -205,8 +205,8 @@ wandb_logger = WandbLogger(
+     project="jump-qc-microsplit",     
+     entity="CiminiLab",    
+     job_type="train",
+-    name="JUMP_QC_WANDB3",     # change for newer runs           
+-    tags=["musplit", "epochs=2", "images=100_per_channel", "batch_size=8"], # change batch size and epochs in the tags for better tracking
++    name="JUMP_QC_WANDB4",     # change for newer runs           
++    tags=["musplit", "epochs=50", "images=100_per_channel", "batch_size=16"], # change batch size and epochs in the tags for better tracking
+     save_dir=".",                    
+     log_model=True,
+     save_code=True,                   
+@@ -449,7 +449,4 @@ _, ax = plt.subplots(
+ show_sampling(val_dset, model, ax=ax[:2])
+ show_sampling(val_dset, model, ax=ax[2:4])
+ show_sampling(val_dset, model, ax=ax[4:6])
+-plt.tight_layout()
+-
+-# %% [markdown]
+-# ### You are done here! 👍 Congratulations! 🎉
++plt.tight_layout()
+\ No newline at end of file
+diff --git a/wandb/latest-run b/wandb/latest-run
+index 137b453..ccb6c96 120000
+--- a/wandb/latest-run
++++ b/wandb/latest-run
+@@ -1 +1 @@
+-run-20260519_101700-gz28saws
+\ No newline at end of file
++run-20260525_163603-576nixx7
+\ No newline at end of file
