@@ -1,0 +1,62 @@
+_wandb:
+    value:
+        cli_version: 0.22.2
+        code_path: code/examples/2D/custom_dataset/01_train.py
+        e:
+            dgfropszo6moq9hboy3sdudfkxofz7pd:
+                apple: {}
+                codePath: examples/2D/custom_dataset/01_train.py
+                codePathLocal: examples/2D/custom_dataset/01_train.py
+                cpu_count: 10
+                cpu_count_logical: 10
+                disk:
+                    /:
+                        total: "494384795648"
+                        used: "458830745600"
+                email: sdasgupt@broadinstitute.org
+                executable: /Users/sdasgupt/anaconda3/envs/microsplit/bin/python
+                git:
+                    commit: 3446c78de1ab24a292bb21fd2b5549dd86637451
+                    remote: https://github.com/broadinstitute/MicroSplit-reproducibility.git
+                host: wm991-b24
+                memory:
+                    total: "17179869184"
+                os: macOS-26.5-arm64-arm-64bit
+                program: /Users/sdasgupt/Documents/microsplit/microsplit/MicroSplit-reproducibility/examples/2D/custom_dataset/01_train.py
+                python: CPython 3.11.13
+                root: .
+                startedAt: "2026-05-25T20:36:03.852885Z"
+                writerId: dgfropszo6moq9hboy3sdudfkxofz7pd
+        m:
+            - "1": trainer/global_step
+              "6":
+                - 3
+              "7": []
+            - "2": '*'
+              "5": 1
+              "6":
+                - 1
+              "7": []
+        python_version: 3.11.13
+        t:
+            "1":
+                - 1
+                - 9
+                - 41
+                - 103
+                - 106
+            "2":
+                - 1
+                - 9
+                - 41
+                - 103
+                - 106
+            "3":
+                - 7
+                - 13
+                - 15
+                - 66
+            "4": 3.11.13
+            "5": 0.22.2
+            "12": 0.22.2
+            "13": darwin-arm64
